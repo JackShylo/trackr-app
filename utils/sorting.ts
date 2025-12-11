@@ -1,10 +1,12 @@
-import { Todo } from "../types/Task";
+import { Todo } from "../types/Todo";
 
 export const sortAlphabetical = (items: Todo[]) =>
-  [...items].sort((a, b) => a.text.localeCompare(b.text));
+  [...items].sort((a, b) =>
+    a.text.localeCompare(b.text, undefined, { sensitivity: "base" })
+  );
 
 export const sortChronological = (items: Todo[]) =>
   [...items].sort((a, b) => a.createdAt - b.createdAt);
 
 export const sortCustom = (items: Todo[]) =>
-  [...items].sort((a, b) => a.order - b.order);
+  [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));

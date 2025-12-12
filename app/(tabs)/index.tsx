@@ -4,6 +4,7 @@ import TodoItem from "../../components/ToDoItem";
 import { Todo } from "../../types/Todo";
 import { sortAlphabetical, sortChronological, sortCustom } from "../../utils/sorting";
 import uuid from "react-native-uuid";
+import SortDropdown from "../../components/SortOrderDropdown";
 
 export default function TodosScreen() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -70,15 +71,7 @@ const deleteTodo = (id: string) => {
 
       {/* Sorting Buttons */}
       <View className="flex-row justify-between mb-4">
-        <Pressable onPress={() => setSortMode("custom")} className="bg-gray-200 px-3 py-2 rounded-lg">
-          <Text>Custom</Text>
-        </Pressable>
-        <Pressable onPress={() => setSortMode("alpha")} className="bg-gray-200 px-3 py-2 rounded-lg">
-          <Text>A–Z</Text>
-        </Pressable>
-        <Pressable onPress={() => setSortMode("chrono")} className="bg-gray-200 px-3 py-2 rounded-lg">
-          <Text>Oldest</Text>
-        </Pressable>
+        <SortDropdown value={sortMode} onChange={setSortMode} />
       </View>
 
       <FlatList

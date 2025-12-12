@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { View, Text, FlatList, Pressable } from "react-native";
-import TodoItem from "../../components/ToDoItem";
-import AddTodoModal from "../../components/AddToDoModal";
-import SortDropdown from "../../components/SortOrderDropdown";
+import TodoItem from "../../components/todo/ToDoItem";
+import AddTodoModal from "../../components/todo/AddToDoModal";
+import SortDropdown from "../../components/todo/SortOrderDropdown";
 import { Todo } from "../../types/Todo";
 import uuid from "react-native-uuid";
 import {
@@ -15,7 +15,7 @@ import { useEffect } from "react";
 export default function TodosScreen() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [sortMode, setSortMode] =
-    useState<"custom" | "alpha" | "chrono">("custom");
+    useState<"custom" | "alpha" | "chrono">("chrono");
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -76,8 +76,7 @@ export default function TodosScreen() {
   }, [todos, sortMode]);
 
   return (
-    <View className="flex-1 p-5 bg-gray-100">
-
+    <View className="bg-primary flex-1 p-5">
       {/* SORT DROPDOWN */}
       <View className="flex-row justify-end mb-4">
         <SortDropdown value={sortMode} onChange={setSortMode} />
@@ -100,9 +99,9 @@ export default function TodosScreen() {
       {/* FLOATING ADD BUTTON */}
       <Pressable
         onPress={() => setModalVisible(true)}
-        className="absolute bottom-8 right-8 bg-blue-500 p-4 rounded-full shadow-lg"
+        className="w-12 h-12 bg-blue-500 p-4 absolute bottom-8 right-8 rounded-full shadow-lg items-center justify-center"
       >
-        <Text className="text-white text-2xl">＋</Text>
+        <Text className="text-white text-3xl bottom-0.5">+</Text>
       </Pressable>
 
       {/* MODAL */}

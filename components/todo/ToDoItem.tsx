@@ -1,6 +1,6 @@
-import { View, Text, TextInput, Pressable, Animated, PanResponder } from "react-native";
+import { View, Text, TextInput, Pressable, Animated, PanResponder, StyleSheet } from "react-native";
 import { useState, useEffect, useRef } from "react";
-import { Todo } from "../types/Todo";
+import { Todo } from "../../types/Todo";
 
 interface Props {
   item: Todo;
@@ -50,28 +50,28 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   });
 
   return (
-    <View className="mb-2">
+    <View style={styles.container}>
       {/* Delete background */}
-      <View className="absolute right-0 top-0 bottom-0 bg-red-500 rounded-lg justify-center pr-5">
-        <Text className="text-white font-bold">Delete</Text>
+      <View style={styles.deleteBackground}>
+        <Text style={styles.deleteText}>Delete</Text>
       </View>
 
       {/* Foreground swipeable card */}
       <Animated.View
         {...pan.panHandlers}
-        style={{
-          transform: [{ translateX }],
-        }}
-        className="p-3 bg-white rounded-lg shadow flex-row items-center"
+        style={[
+          { transform: [{ translateX }], zIndex: 1 },
+          styles.card,
+        ]}
       >
         <Pressable
-          className="flex-1"
+          style={{ flex: 1 }}
           onPress={() => !editing && onToggle(item.id)}
           onLongPress={() => setEditing(true)}
         >
           {editing ? (
             <TextInput
-              className="border p-1 rounded"
+              style={styles.input}
               value={value}
               onChangeText={setValue}
               onBlur={() => {
@@ -81,21 +81,65 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
               autoFocus
             />
           ) : (
-            <Text
-              className={`text-lg ${
-                item.completed ? "line-through text-gray-400" : ""
-              }`}
-            >
+            <Text style={[styles.text, item.completed && styles.completed]}>
               {item.text}
             </Text>
           )}
-        </Pressable>
-
-        {/* Manual delete button (still works) */}
-        <Pressable onPress={() => onDelete(item.id)} className="p-2">
-          <Text className="text-red-500 font-bold">X</Text>
         </Pressable>
       </Animated.View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    position: "relative",
+    marginBottom: 10,
+    minHeight: 60,
+    borderRadius: 12,
+    overflow: "hidden", // ensures delete bg respects rounded corners
+  },
+  deleteBackground: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "#EF4444", // red-500
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingRight: 20,
+  },
+  deleteText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  card: {
+    backgroundColor: "white",
+    padding: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
+    height: "100%",
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    padding: 8,
+    borderRadius: 6,
+    fontSize: 16,
+  },
+  text: {
+    fontSize: 16,
+    color: "#111827",
+  },
+  completed: {
+    textDecorationLine: "line-through",
+    color: "#9CA3AF",
+  },
+});

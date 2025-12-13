@@ -40,6 +40,10 @@ const editIconTranslate = translateX.interpolate({
   extrapolate: "clamp",
 });
 
+
+const SWIPE_ACTIVATION_DISTANCE = 20;
+const VERTICAL_SWIPE_LIMIT = 15;
+
 const editThreshold = 120;
 
   const deleteThreshold = -120;
@@ -50,12 +54,19 @@ const editThreshold = 120;
 
   // --- Swipe Gesture ---
   const pan = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gesture) =>
-      Math.abs(gesture.dx) > 10 && !editing,
+onMoveShouldSetPanResponder: (_, gesture) => {
+  if (editing) return false;
+
+  const isHorizontalSwipe =
+    Math.abs(gesture.dx) > SWIPE_ACTIVATION_DISTANCE &&
+    Math.abs(gesture.dy) < VERTICAL_SWIPE_LIMIT;
+
+  return isHorizontalSwipe;
+},
+
 onPanResponderMove: (_, gesture) => {
-  if (gesture.dx < 0 || gesture.dx > 0) {
-    translateX.setValue(gesture.dx);
-  }
+  const clampedDx = Math.max(-160, Math.min(160, gesture.dx));
+  translateX.setValue(clampedDx);
 },
 
 onPanResponderRelease: (_, gesture) => {
@@ -170,6 +181,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-start",
     paddingLeft: 20,
+    width: "50%"
   },
   deleteBackground: {
     position: "absolute",
@@ -180,6 +192,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "flex-end",
     paddingRight: 20,
+    width: "50%"
   },
   deleteText: {
     color: "white",

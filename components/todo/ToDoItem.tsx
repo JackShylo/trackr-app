@@ -8,12 +8,18 @@ interface Props {
   item: Todo;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, newText: string) => void;
+  onUpdate: (id: string, text: string, notes?: string) => void;
 }
 
 export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(item.text);
+  const [expanded, setExpanded] = useState(false);
+    const [text, setText] = useState(item.text);
+  const [notes, setNotes] = useState(item.notes ?? "");
+
+    const titleRef = useRef<TextInput>(null);
+  const notesRef = useRef<TextInput>(null);
 
   const translateX = useRef(new Animated.Value(0)).current;
   const iconOpacity = translateX.interpolate({
@@ -40,7 +46,10 @@ const editIconTranslate = translateX.interpolate({
   extrapolate: "clamp",
 });
 
-
+  const save = () => {
+    onUpdate(item.id, text.trim(), notes.trim());
+    setEditing(false);
+  }; 
 const SWIPE_ACTIVATION_DISTANCE = 20;
 const VERTICAL_SWIPE_LIMIT = 15;
 
@@ -69,6 +78,7 @@ onPanResponderMove: (_, gesture) => {
   translateX.setValue(clampedDx);
 },
 
+
 onPanResponderRelease: (_, gesture) => {
   if (gesture.dx < deleteThreshold) {
     // DELETE
@@ -91,6 +101,7 @@ if (gesture.dx > editThreshold) {
 
   return;
 }
+
 
 
   // SNAP BACK
@@ -158,6 +169,59 @@ if (gesture.dx > editThreshold) {
               {item.text}
             </Text>
           )}
+
+        {/* Expanded section */}
+        {expanded && (
+          <View style={styles.expand}>
+            {editing ? (
+              <>
+                <TextInput
+                  ref={titleRef}
+                  style={styles.input}
+                  value={item.text}
+                  onChangeText={setText}
+                  placeholder="Task title"
+                  returnKeyType="next"
+                  autoFocus
+                  onSubmitEditing={() => notesRef.current?.focus()}
+                />
+
+                <TextInput
+                  ref={notesRef}
+                  style={[styles.input, styles.notes]}
+                  value={item.notes}
+                  onChangeText={setNotes}
+                  placeholder="Notes (optional)"
+                  multiline
+                  blurOnSubmit
+                  onBlur={save}
+                />
+              </>
+            ) : (
+              <>
+                {!!item.notes && (
+                  <Text style={styles.notesText}>{item.notes}</Text>
+                )}
+
+                <Pressable
+                  style={styles.editBtn}
+                  onPress={() => setEditing(true)}
+                >
+                  <Ionicons name="pencil-outline" size={16} />
+                  <Text style={styles.editText}>Edit</Text>
+                </Pressable>
+              </>
+            )}
+          </View>
+        )}
+          
+        </Pressable>
+        <Pressable onPress={() => setExpanded((v) => !v)}>
+          <Ionicons
+            name={expanded ? "chevron-up" : "chevron-down"}
+            size={20}
+            color="#6B7280"
+          />
         </Pressable>
       </Animated.View>
     </View>
@@ -226,5 +290,34 @@ const styles = StyleSheet.create({
   completed: {
     textDecorationLine: "line-through",
     color: "#9CA3AF",
+  },
+  expand: {
+    marginTop: 10,
+    gap: 8,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: "#D1D5DB",
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 15,
+  },
+  notes: {
+    minHeight: 80,
+    textAlignVertical: "top",
+  },
+  notesText: {
+    color: "#4B5563",
+    lineHeight: 20,
+  },
+  editBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 6,
+  },
+  editText: {
+    color: "#2563EB",
+    fontWeight: "500",
   },
 });

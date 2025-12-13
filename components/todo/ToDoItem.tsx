@@ -1,6 +1,8 @@
 import { View, Text, TextInput, Pressable, Animated, PanResponder, StyleSheet } from "react-native";
 import { useState, useEffect, useRef } from "react";
 import { Todo } from "../../types/Todo";
+import { Ionicons } from "@expo/vector-icons";
+
 
 interface Props {
   item: Todo;
@@ -14,6 +16,32 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   const [value, setValue] = useState(item.text);
 
   const translateX = useRef(new Animated.Value(0)).current;
+  const iconOpacity = translateX.interpolate({
+  inputRange: [-120, -40, 0],
+  outputRange: [1, 0.5, 0],
+  extrapolate: "clamp",
+});
+
+const iconTranslate = translateX.interpolate({
+  inputRange: [-120, 0],
+  outputRange: [0, 20],
+  extrapolate: "clamp",
+});
+
+const editIconOpacity = translateX.interpolate({
+  inputRange: [0, 40, 120],
+  outputRange: [0, 0.5, 1],
+  extrapolate: "clamp",
+});
+
+const editIconTranslate = translateX.interpolate({
+  inputRange: [0, 120],
+  outputRange: [-20, 0],
+  extrapolate: "clamp",
+});
+
+const editThreshold = 120;
+
   const deleteThreshold = -120;
 
   useEffect(() => {
@@ -24,37 +52,72 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   const pan = PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) =>
       Math.abs(gesture.dx) > 10 && !editing,
+onPanResponderMove: (_, gesture) => {
+  if (gesture.dx < 0 || gesture.dx > 0) {
+    translateX.setValue(gesture.dx);
+  }
+},
 
-    onPanResponderMove: (_, gesture) => {
-      if (gesture.dx < 0) {
-        translateX.setValue(gesture.dx); // only allow left swipe
-      }
-    },
+onPanResponderRelease: (_, gesture) => {
+  if (gesture.dx < deleteThreshold) {
+    // DELETE
+    Animated.timing(translateX, {
+      toValue: -300,
+      duration: 150,
+      useNativeDriver: true,
+    }).start(() => onDelete(item.id));
+    return;
+  }
 
-    onPanResponderRelease: (_, gesture) => {
-      if (gesture.dx < deleteThreshold) {
-        // auto delete if swiped far enough
-        Animated.timing(translateX, {
-          toValue: -300,
-          duration: 150,
-          useNativeDriver: true,
-        }).start(() => onDelete(item.id));
-      } else {
-        // snap back
-        Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true,
-        }).start();
-      }
-    },
+if (gesture.dx > editThreshold) {
+  // ENTER EDIT MODE IMMEDIATELY
+  setEditing(true);
+  
+  Animated.spring(translateX, {
+    toValue: 0,
+    useNativeDriver: true,
+  }).start();
+
+  return;
+}
+
+
+  // SNAP BACK
+  Animated.spring(translateX, {
+    toValue: 0,
+    useNativeDriver: true,
+  }).start();
+},
+
   });
 
   return (
     <View style={styles.container}>
+
+    {/* Edit background */}
+<View style={styles.editBackground}>
+  <Animated.View
+    style={{
+      opacity: editIconOpacity,
+      transform: [{ translateX: editIconTranslate }],
+    }}
+  >
+    <Ionicons name="pencil-outline" size={26} color="white" />
+  </Animated.View>
+</View>
+
       {/* Delete background */}
       <View style={styles.deleteBackground}>
-        <Text style={styles.deleteText}>Delete</Text>
+        <Animated.View
+          style={{
+            opacity: iconOpacity,
+            transform: [{ translateX: iconTranslate }],
+          }}
+        >
+          <Ionicons name="trash-outline" size={28} color="white" />
+        </Animated.View>
       </View>
+
 
       {/* Foreground swipeable card */}
       <Animated.View
@@ -66,8 +129,7 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
       >
         <Pressable
           style={{ flex: 1 }}
-          onPress={() => !editing && onToggle(item.id)}
-          onLongPress={() => setEditing(true)}
+          onLongPress={() => !editing && onToggle(item.id)}
         >
           {editing ? (
             <TextInput
@@ -98,6 +160,16 @@ const styles = StyleSheet.create({
     minHeight: 60,
     borderRadius: 12,
     overflow: "hidden", // ensures delete bg respects rounded corners
+  },
+  editBackground: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: "#3B82F6", // blue-500
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingLeft: 20,
   },
   deleteBackground: {
     position: "absolute",

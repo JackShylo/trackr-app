@@ -1,22 +1,17 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { View, Text, FlatList, Pressable } from "react-native";
+import uuid from "react-native-uuid";
 import TodoItem from "../../components/todo/ToDoItem";
 import AddTodoModal from "../../components/todo/AddToDoModal";
 import SortDropdown from "../../components/todo/SortOrderDropdown";
 import { Todo } from "../../types/Todo";
-import uuid from "react-native-uuid";
-import {
-  sortAlphabetical,
-  sortChronological,
-  sortCustom,
-} from "../../utils/sorting";
-import { useEffect } from "react";
+import { sortAlphabetical, sortChronological, sortCustom } from "../../utils/sorting";
 
 export default function TodosScreen() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [sortMode, setSortMode] =
-    useState<"custom" | "alpha" | "chrono">("chrono");
+  const [sortMode, setSortMode] = useState<"custom" | "alpha" | "chrono">("chrono");
   const [modalVisible, setModalVisible] = useState(false);
+  const [sortOpen, setSortOpen] = useState(false);
 
   useEffect(() => {
   // Only generate if list is empty
@@ -53,19 +48,19 @@ export default function TodosScreen() {
     );
   };
 
+    const updateTodo = (id: string, newText: string) => {
+    setTodos((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, text: newText } : t
+      )
+    );
+  };
+
   const deleteTodo = (id: string) => {
     setTodos((prev) =>
       prev
         .filter((t) => t.id !== id)
         .map((t, i) => ({ ...t, order: i }))
-    );
-  };
-
-  const updateTodo = (id: string, newText: string) => {
-    setTodos((prev) =>
-      prev.map((t) =>
-        t.id === id ? { ...t, text: newText } : t
-      )
     );
   };
 
@@ -77,13 +72,28 @@ export default function TodosScreen() {
 
   return (
     <View className="bg-primary flex-1 p-5">
-      {/* SORT DROPDOWN */}
-      <View className="flex-row justify-end mb-4">
-        <SortDropdown value={sortMode} onChange={setSortMode} />
+      {/* HEADER */}
+      <View className="flex-row mb-4">
+        <View className="flex-1">
+          <Text className="text-white text-lg font-semibold">To-Do List</Text>
+        </View>
+        <View className="flex-2 justify-end">
+          <SortDropdown
+            value={sortMode}
+            open={sortOpen}
+            onToggle={() => setSortOpen(v => !v)}
+            onClose={() => setSortOpen(false)}
+            onChange={(mode) => {
+              setSortMode(mode);
+              setSortOpen(false);
+            }}
+          />
+        </View>
       </View>
 
       {/* LIST */}
       <FlatList
+        style={{ zIndex: -1 }}
         data={sorted}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -104,7 +114,7 @@ export default function TodosScreen() {
         <Text className="text-white text-3xl bottom-0.5">+</Text>
       </Pressable>
 
-      {/* MODAL */}
+      {/* ADD TODOMODAL */}
       <AddTodoModal
         visible={modalVisible}
         onClose={() => setModalVisible(false)}

@@ -2,12 +2,13 @@ import { useState, useEffect, useRef } from "react";
 import { View, Text, TextInput, Pressable, Animated, PanResponder, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Todo } from "../../types/Todo";
+import EditTodoModal from "./EditToDoModal";
 
 interface Props {
   item: Todo;
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
-  onUpdate: (id: string, text: string, notes?: string) => void;
+  onUpdate: (id: string, text: string, notes?: string, category?: string) => void;
 }
 
 export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) {
@@ -15,9 +16,11 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   const [expanded, setExpanded] = useState(false);
   const [text, setText] = useState(item.text);
   const [notes, setNotes] = useState(item.notes ?? "");
+  const [category, setCategory] = useState(item.category ?? "");
   const titleRef = useRef<TextInput>(null);
   const notesRef = useRef<TextInput>(null);
   const translateX = useRef(new Animated.Value(0)).current;
+  const [editVisible, setEditVisible] = useState(false);
 
   const SWIPE_ACTIVATION_DISTANCE = 20;
   const VERTICAL_SWIPE_LIMIT = 15;
@@ -27,8 +30,8 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   useEffect(() => {
     setText(item.text);
     setNotes(item.notes ?? "");
-  }, [item.text, item.notes]);
-
+    setCategory(item.category ?? "");
+  }, [item.text, item.notes, item.category]);
 
   {/* Interpolations for icons */}
   const iconOpacity = translateX.interpolate({
@@ -56,15 +59,15 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   });
 
   const save = () => {
-    const trimmedText = text.trim();
-    const trimmedNotes = notes.trim();
-
-    if (trimmedText !== item.text || trimmedNotes !== item.notes) {
-      onUpdate(item.id, trimmedText, trimmedNotes);
-    }
-
+    onUpdate(
+      item.id,
+      text.trim(),
+      notes.trim(),
+      category.trim() || undefined
+    );
     setEditing(false);
   };
+
 
 
   {/* PanResponder for swipe gestures */}
@@ -148,9 +151,8 @@ return (
         ]}
       >
         <Pressable
-          style={{ flex: 5, height: "100%" }}
-          className="justify-center px-4"
-          onLongPress={() => !editing && setEditing(true)}
+          className="flex-5 min-h-100 justify-center px-4"
+          onLongPress={() => !editing && setEditVisible(true)}
         >
           {editing ? (
             <>
@@ -173,6 +175,14 @@ return (
             {editing ? (
               <>
                 <TextInput
+                  style={[styles.input, styles.notes]}
+                  value={category}
+                  onChangeText={setCategory}
+                  placeholder="Category (optional)"
+                  autoCapitalize="words"
+                  returnKeyType="next"
+                />
+                <TextInput
                   ref={notesRef}
                   style={[styles.input, styles.notes]}
                   value={item.notes}
@@ -185,7 +195,7 @@ return (
             ) : (
               <>
                 {!!item.notes && (
-                  <Text style={styles.notesText}>{item.notes}</Text>
+                  <Text style={styles.notesText} className="">{item.notes}</Text>
                 )}
               </>
             )}
@@ -193,7 +203,7 @@ return (
         )}
           
         </Pressable>
-        <Pressable style={{ flex: 1 }} onPress={() => setExpanded((v) => !v)}>
+        <Pressable className="flex-1 absolute right-8" onPress={() => setExpanded((v) => !v)}>
           <Ionicons
             name={expanded ? "chevron-up" : "chevron-down"}
             size={20}
@@ -201,6 +211,13 @@ return (
           />
         </Pressable>
       </Animated.View>
+
+      <EditTodoModal
+        visible={editVisible}
+        todo={item}
+        onClose={() => setEditVisible(false)}
+        onSave={onUpdate}
+      />
     </View>
   );
 }

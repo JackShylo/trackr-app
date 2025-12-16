@@ -2,8 +2,8 @@ export interface Todo {
   id: string;
   text: string;
   notes?: string;
-  createdAt: number;
+  category?: string;
   completed: boolean;
+  createdAt: number;
   order: number;
-  isEditing?: boolean;
 }

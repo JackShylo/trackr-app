@@ -15,7 +15,7 @@ export default function TodosScreen() {
 
   useEffect(() => {
   // Only generate if list is empty
-  if (todos.length === 0) {
+  /*if (todos.length === 0) {
     const dummy = Array.from({ length: 5 }).map((_, idx) => ({
       id: String(uuid.v4()),
       text: `Sample Task ${idx + 1}`,
@@ -23,9 +23,46 @@ export default function TodosScreen() {
       completed: false,
       order: idx,
     }));
+    */
+   const dummy = [
+      {
+        id: String(uuid.v4()),
+        text: "Buy groceries",
+        createdAt: Date.now() - 60000,
+        completed: false,
+        order: 0,
+      },
+      {
+        id: String(uuid.v4()),
+        text: "Walk the dog",
+        createdAt: Date.now() - 120000,
+        completed: true,
+        order: 1,
+      },
+      {
+        id: String(uuid.v4()),
+        text: "Read a book",
+        createdAt: Date.now() - 180000,
+        completed: false,
+        order: 2,
+      },
+      {
+        id: String(uuid.v4()),
+        text: "Workout session",
+        createdAt: Date.now() - 240000,
+        completed: false,
+        order: 3,
+      },
+      {
+        id: String(uuid.v4()),
+        text: "Call mom",
+        createdAt: Date.now() - 300000,
+        completed: true,
+        order: 4,
+      }
+    ];  
 
     setTodos(dummy);
-  }
 }, []);
 
   const addTodo = (text: string) => {
@@ -48,10 +85,10 @@ export default function TodosScreen() {
     );
   };
 
-    const updateTodo = (id: string, newText: string) => {
+  const updateTodo = (id: string, newText: string, notes?: string, category?: string) => {
     setTodos((prev) =>
       prev.map((t) =>
-        t.id === id ? { ...t, text: newText } : t
+        t.id === id ? { ...t, text: newText, notes, category } : t
       )
     );
   };
@@ -69,6 +106,18 @@ export default function TodosScreen() {
     if (sortMode === "chrono") return sortChronological(todos);
     return sortCustom(todos);
   }, [todos, sortMode]);
+
+  const groupedTodos = useMemo(() => {
+  const groups: Record<string, Todo[]> = {};
+
+  for (const todo of sorted) {
+    const key = todo.category?.trim() || "Other";
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(todo);
+  }
+
+  return groups;
+}, [sorted]);
 
   return (
     <View className="bg-primary flex-1 p-5">
@@ -91,8 +140,26 @@ export default function TodosScreen() {
         </View>
       </View>
 
+      {Object.entries(groupedTodos).map(([category, items]) => (
+        <View key={category} className="border border-gray-300 rounded-lg px-2 pt-2">
+          <Text className="text-xs font-semibold text-gray-500 uppercase mb-2 absolute -top-3 bg-primary px-2">
+            {category}
+          </Text>
+
+          {items.map((item) => (
+            <TodoItem
+              key={item.id}
+              item={item}
+              onToggle={toggleTodo}
+              onDelete={deleteTodo}
+              onUpdate={updateTodo}
+            />
+          ))}
+        </View>
+      ))}
+
       {/* LIST */}
-      <FlatList
+      {/*<FlatList
         style={{ zIndex: -1 }}
         data={sorted}
         keyExtractor={(item) => item.id}
@@ -104,7 +171,7 @@ export default function TodosScreen() {
             onUpdate={updateTodo}
           />
         )}
-      />
+      />*/}
 
       {/* FLOATING ADD BUTTON */}
       <Pressable

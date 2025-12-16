@@ -45,7 +45,7 @@ export default function SortDropdown({
           />
 
           <View
-            className="absolute top-8 right-0 bg-white rounded-lg shadow w-40"
+            className="absolute top-8 right-0 bg-white rounded-lg shadow w-40 z-20"
             style={{ zIndex: 20, elevation: 10 }}
           >
             <Option

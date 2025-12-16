@@ -151,7 +151,7 @@ return (
         ]}
       >
         <Pressable
-          className="flex-5 min-h-100 justify-center px-4"
+          className="flex-1 min-h-100 min-w-100 justify-center px-4"
           onLongPress={() => !editing && setEditVisible(true)}
         >
           {editing ? (
@@ -203,13 +203,13 @@ return (
         )}
           
         </Pressable>
-        <Pressable className="flex-1 absolute right-8" onPress={() => setExpanded((v) => !v)}>
           <Ionicons
             name={expanded ? "chevron-up" : "chevron-down"}
             size={20}
             color="#6B7280"
+            onPress={() => setExpanded((v) => !v)}
+            className="absolute right-4"
           />
-        </Pressable>
       </Animated.View>
 
       <EditTodoModal

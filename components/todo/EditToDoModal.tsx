@@ -56,17 +56,6 @@ export default function EditTodoModal({
                 </Text>
                 )}
 
-
-            {/* Notes */}
-            <TextInput
-              className="border border-gray-300 rounded-xl px-4 py-3 text-base mb-3 min-h-[80px]"
-              value={notes}
-              onChangeText={setNotes}
-              placeholder="Notes (optional)"
-              multiline
-              textAlignVertical="top"
-            />
-
             {/* Category */}
             <TextInput
               className="border border-gray-300 rounded-xl px-4 py-3 text-base mb-4"

@@ -12,22 +12,25 @@ import {
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (text: string) => void;
+  onSubmit: (text: string, category?: string) => void;
 }
 
 export default function AddTodoModal({ visible, onClose, onSubmit }: Props) {
   const [text, setText] = useState("");
+  const [category, setCategory] = useState("");
 
   const handleAdd = () => {
     if (text.trim()) {
-      onSubmit(text.trim());
+      onSubmit(text.trim(), category.trim().toLowerCase() || undefined);
       setText("");
+      setCategory("");
       onClose();
     }
   };
 
   const handleClose = () => {
     setText("");
+    setCategory("");
     onClose();
   };
 
@@ -53,6 +56,14 @@ export default function AddTodoModal({ visible, onClose, onSubmit }: Props) {
             placeholder="Type your task…"
             value={text}
             onChangeText={setText}
+            autoFocus
+          />
+
+          <TextInput
+            style={styles.input}
+            placeholder="Category (optional)"
+            value={category}
+            onChangeText={setCategory}
             autoFocus
           />
 

@@ -1,11 +1,12 @@
 import { useMemo, useState, useEffect } from "react";
-import { View, Text, FlatList, Pressable } from "react-native";
+import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
 import uuid from "react-native-uuid";
 import TodoItem from "../../components/todo/ToDoItem";
 import AddTodoModal from "../../components/todo/AddToDoModal";
 import SortDropdown from "../../components/todo/SortOrderDropdown";
 import { Todo } from "../../types/Todo";
 import { sortAlphabetical, sortChronological, sortCustom } from "../../utils/sorting";
+import { dummy } from "../../scripts/fodderToDos";
 
 export default function TodosScreen() {
   const [todos, setTodos] = useState<Todo[]>([]);
@@ -24,51 +25,14 @@ export default function TodosScreen() {
       order: idx,
     }));
     */
-   const dummy = [
-      {
-        id: String(uuid.v4()),
-        text: "Buy groceries",
-        createdAt: Date.now() - 60000,
-        completed: false,
-        order: 0,
-      },
-      {
-        id: String(uuid.v4()),
-        text: "Walk the dog",
-        createdAt: Date.now() - 120000,
-        completed: true,
-        order: 1,
-      },
-      {
-        id: String(uuid.v4()),
-        text: "Read a book",
-        createdAt: Date.now() - 180000,
-        completed: false,
-        order: 2,
-      },
-      {
-        id: String(uuid.v4()),
-        text: "Workout session",
-        createdAt: Date.now() - 240000,
-        completed: false,
-        order: 3,
-      },
-      {
-        id: String(uuid.v4()),
-        text: "Call mom",
-        createdAt: Date.now() - 300000,
-        completed: true,
-        order: 4,
-      }
-    ];  
-
     setTodos(dummy);
 }, []);
 
-  const addTodo = (text: string) => {
+  const addTodo = (text: string, category?: string) => {
     const newTodo: Todo = {
       id: String(uuid.v4()),
       text,
+      category: category ? category : undefined,
       createdAt: Date.now(),
       completed: false,
       order: todos.length,
@@ -111,7 +75,7 @@ export default function TodosScreen() {
   const groups: Record<string, Todo[]> = {};
 
   for (const todo of sorted) {
-    const key = todo.category?.trim() || "Other";
+    const key = todo.category?.trim() || "Uncategorized";
     if (!groups[key]) groups[key] = [];
     groups[key].push(todo);
   }
@@ -120,28 +84,16 @@ export default function TodosScreen() {
 }, [sorted]);
 
   return (
-    <View className="bg-primary flex-1 p-5">
+    <ScrollView className="bg-primary flex-1 p-5">
       {/* HEADER */}
       <View className="flex-row mb-4">
         <View className="flex-1">
           <Text className="text-white text-lg font-semibold">To-Do List</Text>
         </View>
-        <View className="flex-2 justify-end">
-          <SortDropdown
-            value={sortMode}
-            open={sortOpen}
-            onToggle={() => setSortOpen(v => !v)}
-            onClose={() => setSortOpen(false)}
-            onChange={(mode) => {
-              setSortMode(mode);
-              setSortOpen(false);
-            }}
-          />
-        </View>
       </View>
 
       {Object.entries(groupedTodos).map(([category, items]) => (
-        <View key={category} className="border border-gray-300 rounded-lg px-2 pt-2">
+        <View key={category} className="border border-gray-800 rounded-xl px-2 pt-2 mt-4 relative">
           <Text className="text-xs font-semibold text-gray-500 uppercase mb-2 absolute -top-3 bg-primary px-2">
             {category}
           </Text>
@@ -173,6 +125,19 @@ export default function TodosScreen() {
         )}
       />*/}
 
+      <View className="absolute top-5 right-5 z-10">
+        <SortDropdown
+          value={sortMode}
+          open={sortOpen}
+          onToggle={() => setSortOpen(v => !v)}
+          onClose={() => setSortOpen(false)}
+          onChange={(mode) => {
+            setSortMode(mode);
+            setSortOpen(false);
+          }}
+        />
+      </View>
+
       {/* FLOATING ADD BUTTON */}
       <Pressable
         onPress={() => setModalVisible(true)}
@@ -187,6 +152,6 @@ export default function TodosScreen() {
         onClose={() => setModalVisible(false)}
         onSubmit={addTodo}
       />
-    </View>
+    </ScrollView>
   );
 }

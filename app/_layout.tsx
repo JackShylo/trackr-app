@@ -6,6 +6,9 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { NativeWindProvider } from '../components/nativewind-provider';
+import { useEffect, useState } from "react";
+import { loadLists } from "../utils/storage";
+import { List } from "..//types/List";
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -13,13 +16,20 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const [lists, setLists] = useState<List[]>([]);
 
+    // Load lists on app start
+  useEffect(() => {
+    loadLists().then((stored) => {
+      if (stored) setLists(stored);
+    });
+  }, []);
+  
   return (
     <NativeWindProvider>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>

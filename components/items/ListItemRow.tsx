@@ -1,23 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import { View, Text, TextInput, Pressable, Animated, PanResponder, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Todo } from "../../types/Todo";
-import EditTodoModal from "./EditToDoModal";
+import { ListItem } from "../../types/ListItem";
+import UpdateItemModal from "./UpdateItemModal";
 
 interface Props {
-  item: Todo;
-  onToggle: (id: string) => void;
-  onDelete: (id: string) => void;
-  onUpdate: (id: string, text: string, notes?: string, category?: string) => void;
+  item: ListItem;
+  onToggle?: (id: string) => void;
+  onDelete?: (id: string) => void;
+  onUpdate?: (
+    id: string,
+    updates: Partial<Pick<ListItem, "title" | "notes" | "category">>
+  ) => void;
 }
 
-export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) {
+export default function ListItemRow({ item, onToggle, onDelete, onUpdate }: Props) {
   const [editing, setEditing] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [text, setText] = useState(item.text);
+  const [text, setText] = useState(item.title);
   const [notes, setNotes] = useState(item.notes ?? "");
   const [category, setCategory] = useState(item.category ?? "");
-  const titleRef = useRef<TextInput>(null);
   const notesRef = useRef<TextInput>(null);
   const translateX = useRef(new Animated.Value(0)).current;
   const [editVisible, setEditVisible] = useState(false);
@@ -28,10 +30,10 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   const deleteThreshold = -120;
 
   useEffect(() => {
-    setText(item.text);
+    setText(item.title);
     setNotes(item.notes ?? "");
     setCategory(item.category ?? "");
-  }, [item.text, item.notes, item.category]);
+  }, [item.title, item.notes, item.category]);
 
   {/* Interpolations for icons */}
   const iconOpacity = translateX.interpolate({
@@ -59,12 +61,8 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
   });
 
   const save = () => {
-    onUpdate(
-      item.id,
-      text.trim(),
-      notes.trim(),
-      category.trim() || undefined
-    );
+    onUpdate!(item.id, { title: text.trim(), notes: notes.trim(), category: category.trim() });
+
     setEditing(false);
   };
 
@@ -92,14 +90,14 @@ export default function ToDoItem({ item, onToggle, onDelete, onUpdate }: Props) 
         toValue: -300,
         duration: 150,
         useNativeDriver: true,
-      }).start(() => onDelete(item.id));
+      }).start(() => onDelete!(item.id));
       return;
     }
 
   if (gesture.dx > editThreshold) {
     // ENTER EDIT MODE IMMEDIATELY
-    onToggle(item.id);
-    
+    onToggle!(item.id);
+
     Animated.spring(translateX, {
       toValue: 0,
       useNativeDriver: true,
@@ -165,7 +163,7 @@ return (
             </>
           ) : (
             <Text style={[styles.itemTitle, item.completed && styles.completed]}>
-              {item.text}
+              {item.title}
             </Text>
           )}
 
@@ -212,11 +210,11 @@ return (
           />
       </Animated.View>
 
-      <EditTodoModal
+      <UpdateItemModal
         visible={editVisible}
-        todo={item}
+        list={item}
         onClose={() => setEditVisible(false)}
-        onSave={onUpdate}
+        onSave={onUpdate!}
       />
     </View>
   );

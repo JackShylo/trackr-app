@@ -1,4 +1,4 @@
-import { Todo } from "../types/Todo";
+import { Todo } from "../types/ListItem";
 
 export const sortAlphabetical = (items: Todo[]) =>
   [...items].sort((a, b) =>

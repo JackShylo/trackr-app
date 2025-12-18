@@ -15,7 +15,7 @@ interface Props {
   onSubmit: (text: string, category?: string) => void;
 }
 
-export default function AddTodoModal({ visible, onClose, onSubmit }: Props) {
+export default function CreateItemModal({ visible, onClose, onSubmit }: Props) {
   const [text, setText] = useState("");
   const [category, setCategory] = useState("");
 

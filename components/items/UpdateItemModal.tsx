@@ -1,17 +1,17 @@
 import { Modal, View, Text, TextInput, Pressable, KeyboardAvoidingView } from "react-native";
 import { useEffect, useState } from "react";
-import { Todo } from "../../types/Todo";
+import { ListItem } from "../../types/ListItem";
 
 interface Props {
   visible: boolean;
-  todo: Todo | null;
+  list: ListItem | null;
   onClose: () => void;
-  onSave: (id: string, text: string, notes?: string, category?: string) => void;
+  onSave: (id: string, updates: Partial<Pick<ListItem, "title" | "notes" | "category">>) => void;
 }
 
-export default function EditTodoModal({
+export default function UpdateItemModal({
   visible,
-  todo,
+  list,
   onClose,
   onSave,
 }: Props) {
@@ -20,14 +20,14 @@ export default function EditTodoModal({
   const [category, setCategory] = useState("");
 
   useEffect(() => {
-    if (todo) {
-      setText(todo.text);
-      setNotes(todo.notes ?? "");
-      setCategory(todo.category ?? "");
+    if (list) {
+      setText(list.title);
+      setNotes(list.notes ?? "");
+      setCategory(list.category ?? "");
     }
-  }, [todo]);
+  }, [list]);
 
-  if (!todo) return null;
+  if (!list) return null;
 
   return (
     <Modal
@@ -73,7 +73,7 @@ export default function EditTodoModal({
               <Pressable
                 onPress={() => {
                   onSave(
-                    todo.id,
+                    list.id,
                     text.trim(),
                     notes.trim() || undefined,
                     category.trim() || undefined

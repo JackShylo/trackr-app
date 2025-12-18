@@ -14,13 +14,6 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false
       }}>
-      <Tabs.Screen
-        name="index"
-        options={{
-          title: 'To Do',
-          tabBarIcon: ({ color }) => <AntDesign name="unordered-list" size={24} color={color} />,
-        }}
-      />
     </Tabs>
   );
 }

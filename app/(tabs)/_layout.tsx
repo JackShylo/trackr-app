@@ -15,18 +15,18 @@ export default function TabLayout() {
         headerShown: false
       }}>
       <Tabs.Screen
-        name="lists"
+        name="lists/index"
         options={{
-          title: 'Lists',
+          tabBarLabel: 'Home',
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="bars" size={size} color={color} />
+            <AntDesign name="home" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          tabBarLabel: 'Settings',
           tabBarIcon: ({ color, size }) => (
             <AntDesign name="setting" size={size} color={color} />
           ),

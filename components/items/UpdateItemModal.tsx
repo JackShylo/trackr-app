@@ -6,28 +6,19 @@ interface Props {
   visible: boolean;
   list: ListItem | null;
   onClose: () => void;
-  onSave: (id: string, updates: Partial<Pick<ListItem, "title" | "notes" | "category">>) => void;
+  onSave: (id: string, updates: Partial<Pick<ListItem, "title" | "category">>) => void;
 }
 
-export default function UpdateItemModal({
-  visible,
-  list,
-  onClose,
-  onSave,
-}: Props) {
+export default function UpdateItemModal({ visible, list, onClose, onSave }: Props) {
   const [text, setText] = useState("");
-  const [notes, setNotes] = useState("");
   const [category, setCategory] = useState("");
 
   useEffect(() => {
     if (list) {
       setText(list.title);
-      setNotes(list.notes ?? "");
-      setCategory(list.category ?? "");
+      setCategory(list.category || "");
     }
   }, [list]);
-
-  if (!list) return null;
 
   return (
     <Modal
@@ -72,12 +63,12 @@ export default function UpdateItemModal({
 
               <Pressable
                 onPress={() => {
-                  onSave(
-                    list.id,
-                    text.trim(),
-                    notes.trim() || undefined,
-                    category.trim() || undefined
-                  );
+                  if (list) {
+                    onSave(
+                      list.id,
+                      { title: text.trim(), category: category.trim() || undefined }
+                    );
+                  }
                   onClose();
                 }}
               >

@@ -7,11 +7,12 @@ interface Props {
   list: List;
   onPress: () => void;
   onDelete?: () => void
+  onOpenMenu?: () => void;
   onLongPress?: () => void;
 }
 
 
-export default function ListCard({ list, onPress, onDelete }: Props) {
+export default function ListCard({ list, onPress, onDelete, onOpenMenu }: Props) {
   const translateX = useRef(new Animated.Value(0)).current;
   const SWIPE_ACTIVATION_DISTANCE = 20;
   const VERTICAL_SWIPE_LIMIT = 15;
@@ -90,7 +91,9 @@ const confirmDelete = (event: GestureResponderEvent) => {
       </View>
 
       {/* Chevron */}
-      <Ionicons name="chevron-forward" size={18} color="#9CA3AF" onPress={onPress} />
+      <Pressable onPress={onOpenMenu} className="p-2">
+        <Ionicons name="ellipsis-vertical" size={20} />
+      </Pressable>
     </Pressable>
   );
 }

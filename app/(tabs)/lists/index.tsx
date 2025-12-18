@@ -4,6 +4,8 @@ import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
 import CreateListModal from "@/components/lists/CreateListModal";
 import ListCard from "@/components/lists/ListCard";
 import { useListsStore } from "@/store/useListStore";
+import { List } from "@/types/List";
+import ListActionsSheet from "@/components/lists/ListActionsSheet";
 
 export default function ListsScreen() {
   useEffect(() => {
@@ -12,8 +14,11 @@ export default function ListsScreen() {
     }
   }, []);
 
-  const lists = useListsStore((s) => s.lists);
   const [addOpen, setAddOpen] = useState(false);
+  const [selectedList, setSelectedList] = useState<List | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const lists = useListsStore((s) => s.lists);
   const deleteList = useListsStore((s) => s.deleteList);
   const addList = useListsStore((s) => s.addList);
 
@@ -32,11 +37,30 @@ export default function ListsScreen() {
           data={lists}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
+            <>
             <ListCard
               list={item}
               onPress={() => router.push(`/lists/${item.id}`)}
               onDelete={() => deleteList(item.id)}
+              onOpenMenu={() => {
+                setSelectedList(lists.find((l) => l.id === item.id) || null);
+                setSheetOpen(true);
+              }}
             />
+            <ListActionsSheet
+              list={selectedList}
+              visible={sheetOpen}
+              onClose={() => setSheetOpen(false)}
+              onRename={() => {
+                setSheetOpen(false);
+                // open rename modal
+              }}
+              onDelete={() => {
+                setSheetOpen(false);
+                deleteList(selectedList!.id);
+              }}
+            />
+            </>
           )}
           ListEmptyComponent={
             <Text className="text-gray-400 text-center mt-20">

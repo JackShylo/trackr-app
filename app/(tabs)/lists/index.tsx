@@ -1,81 +1,64 @@
-import { View, Text, FlatList, Pressable } from "react-native";
-import { useEffect, useState } from "react";
 import { router } from "expo-router";
-import uuid from "react-native-uuid";
-
-import { List } from "../../../types/List";
-import { loadLists, saveLists } from "../../../utils/storage";
-import ListCard from "../../../components/lists/ListCard";
-import { useListsStore } from "../../../store/useListStore";
+import { useEffect, useState } from "react";
+import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
+import CreateListModal from "@/components/lists/CreateListModal";
+import ListCard from "@/components/lists/ListCard";
+import { useListsStore } from "@/store/useListStore";
 
 export default function ListsScreen() {
-  const [lists, setLists] = useState<List[]>([]);
-
-const deleteList = useListsStore((s) => s.deleteList);
-
-
   useEffect(() => {
-    (async () => {
-      const stored = await loadLists();
-      if (stored) setLists(stored);
-    })();
+    if (!useListsStore.getState().hydrated) {
+    useListsStore.getState().hydrate();
+    }
   }, []);
 
-  useEffect(() => {
-    saveLists(lists);
-  }, [lists]);
-
-  const createList = () => {
-    const newList: List = {
-      id: String(uuid.v4()),
-      title: "New List",
-      createdAt: Date.now(),
-      items: [
-        {
-          id: String(uuid.v4()),
-          title: "Sample Item", 
-          completed: false,
-          createdAt: Date.now(),
-          order: 0,
-        },
-      ],
-    };
-
-    setLists((prev) => [...prev, newList]);
-  };
-
-  console.log("Rendering ListsScreen with lists:", lists);
+  const lists = useListsStore((s) => s.lists);
+  const [addOpen, setAddOpen] = useState(false);
+  const deleteList = useListsStore((s) => s.deleteList);
+  const addList = useListsStore((s) => s.addList);
 
   return (
-    <View className="flex-1 bg-primary p-5">
+    <>
+    <ScrollView className="flex-1 bg-primary p-5 min-h-full">
       {/* Header */}
-      <View className="flex-row items-center mb-4">
+      <View className="flex-row mb-4">
         <Text className="text-white text-lg font-semibold flex-1">
           My Lists
         </Text>
-
-        <Pressable onPress={createList}>
-          <Text className="text-blue-400 text-base">+ New</Text>
-        </Pressable>
       </View>
 
       {/* Lists */}
-      <FlatList
-        data={lists}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <ListCard
-            list={item}
-            onPress={() => router.push(`/lists/${item.id}`)}
-            onDelete={() => deleteList(item.id)}
-          />
-        )}
-        ListEmptyComponent={
-          <Text className="text-gray-400 text-center mt-20">
-            No lists yet
-          </Text>
-        }
-      />
-    </View>
+        <FlatList
+          data={lists}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <ListCard
+              list={item}
+              onPress={() => router.push(`/lists/${item.id}`)}
+              onDelete={() => deleteList(item.id)}
+            />
+          )}
+          ListEmptyComponent={
+            <Text className="text-gray-400 text-center mt-20">
+              No lists yet
+            </Text>
+          }
+        />
+    </ScrollView>
+
+    {/* Floating Add Button */}
+    <Pressable
+      onPress={() => setAddOpen(true)}
+      className="absolute bottom-8 right-8 w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg"
+    >
+      <Text className="text-white text-3xl leading-none">+</Text>
+    </Pressable>
+
+    <CreateListModal
+      visible={addOpen}
+      onClose={() => setAddOpen(false)}
+      onSubmit={(title) => addList(title)}
+    />
+  </>
   );
 }

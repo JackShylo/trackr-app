@@ -39,7 +39,7 @@ export const useListsStore = create<ListsState>((set, get) => ({
   },
 
   /* ─────────── List Actions ─────────── */
-  addList: (title) => {
+  addList: async (title) => {
     const newList: List = {
       id: crypto.randomUUID(),
       title,
@@ -49,25 +49,25 @@ export const useListsStore = create<ListsState>((set, get) => ({
 
     const lists = [...get().lists, newList];
     set({ lists });
-    saveLists(lists);
+    await saveLists(lists);
   },
 
-  updateList: (id, title) => {
+  updateList: async (id, title) => {
     const lists = get().lists.map((l) =>
       l.id === id ? { ...l, title } : l
     );
     set({ lists });
-    saveLists(lists);
+    await saveLists(lists);
   },
 
-  deleteList: (id) => {
+  deleteList: async (id) => {
     const lists = get().lists.filter((l) => l.id !== id);
     set({ lists });
-    saveLists(lists);
+    await saveLists(lists);
   },
 
   /* ─────────── Item Actions ─────────── */
-  addItem: (listId, title) => {
+  addItem: async (listId, title) => {
     const lists = get().lists.map((list) => {
       if (list.id !== listId) return list;
 
@@ -86,10 +86,10 @@ export const useListsStore = create<ListsState>((set, get) => ({
     });
 
     set({ lists });
-    saveLists(lists);
+    await saveLists(lists);
   },
 
-  updateItem: (listId, itemId, updates) => {
+  updateItem: async (listId, itemId, updates) => {
     const lists = get().lists.map((list) => {
       if (list.id !== listId) return list;
 
@@ -102,10 +102,10 @@ export const useListsStore = create<ListsState>((set, get) => ({
     });
 
     set({ lists });
-    saveLists(lists);
+    await saveLists(lists);
   },
 
-  toggleItem: (listId, itemId) => {
+  toggleItem: async (listId, itemId) => {
     const lists = get().lists.map((list) => {
       if (list.id !== listId) return list;
 
@@ -120,7 +120,7 @@ export const useListsStore = create<ListsState>((set, get) => ({
     });
 
     set({ lists });
-    saveLists(lists);
+    await saveLists(lists);
   },
 
   deleteItem: (listId, itemId) => {

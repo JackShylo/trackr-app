@@ -16,12 +16,10 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [lists, setLists] = useState<List[]>([]);
 
     // Load lists on app start
   useEffect(() => {
     loadLists().then((stored) => {
-      if (stored) setLists(stored);
     });
   }, []);
   

@@ -1,12 +1,9 @@
 import { View, Text, FlatList, Pressable } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import uuid from "react-native-uuid";
-
 import ListItemRow from "../../../components/items/ListItemRow";
 import CreateItemModal from "../../../components/items/CreateItemModal";
 import { useListsStore } from "../../../store/useListStore";
-import { ListItem } from "../../../types/ListItem";
 
 export default function ListDetailScreen() {
   const { listId } = useLocalSearchParams<{ listId: string }>();
@@ -23,15 +20,11 @@ export default function ListDetailScreen() {
   const updateItem = useListsStore((s) => s.updateItem);
   const deleteItem = useListsStore((s) => s.deleteItem);
   const toggleItem = useListsStore((s) => s.toggleItem);
-  const reorderItems = useListsStore((s) => s.reorderItems);
-
 
   /* ─────────── Hydrate once ─────────── */
   useEffect(() => {
     hydrate();
   }, [hydrate]);
-
-
 
   if (!hydrated) {
     return (
@@ -48,8 +41,6 @@ export default function ListDetailScreen() {
       </View>
     );
   }
-
-
 
   return (
     <>

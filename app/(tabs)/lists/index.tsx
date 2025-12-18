@@ -3,9 +3,11 @@ import { useEffect, useState } from "react";
 import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
 import CreateListModal from "@/components/lists/CreateListModal";
 import ListCard from "@/components/lists/ListCard";
+import ListActionsSheet from "@/components/lists/ListActionsSheet";
+import UpdateListModal from "@/components/lists/UpdateListModal";
 import { useListsStore } from "@/store/useListStore";
 import { List } from "@/types/List";
-import ListActionsSheet from "@/components/lists/ListActionsSheet";
+
 
 export default function ListsScreen() {
   useEffect(() => {
@@ -17,6 +19,7 @@ export default function ListsScreen() {
   const [addOpen, setAddOpen] = useState(false);
   const [selectedList, setSelectedList] = useState<List | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
+  const [editVisible, setEditVisible] = useState(false);
 
   const lists = useListsStore((s) => s.lists);
   const deleteList = useListsStore((s) => s.deleteList);
@@ -48,16 +51,24 @@ export default function ListsScreen() {
               }}
             />
             <ListActionsSheet
-              list={selectedList}
               visible={sheetOpen}
               onClose={() => setSheetOpen(false)}
               onRename={() => {
                 setSheetOpen(false);
-                // open rename modal
+                setEditVisible(true);
               }}
               onDelete={() => {
                 setSheetOpen(false);
                 deleteList(selectedList!.id);
+              }}
+            />
+            <UpdateListModal
+              visible={editVisible}
+              onClose={() => setEditVisible(false)}
+              onSave={(title) => {
+                if (selectedList) {
+                  useListsStore.getState().updateList(selectedList.id, title);
+                }
               }}
             />
             </>

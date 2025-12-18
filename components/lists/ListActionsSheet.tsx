@@ -2,7 +2,6 @@ import { Modal, View, Pressable, Text } from "react-native";
 import { List } from "@/types/List";
 
 type Props = {
-  list: List | null;
   visible: boolean;
   onClose: () => void;
   onRename: () => void;
@@ -10,7 +9,6 @@ type Props = {
 };
 
 export default function ListActionsSheet({
-  list,
   visible,
   onClose,
   onRename,

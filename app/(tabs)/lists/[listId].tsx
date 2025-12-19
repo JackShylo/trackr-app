@@ -1,4 +1,4 @@
-import { View, Text, FlatList, Pressable } from "react-native";
+import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import ListItemRow from "../../../components/items/ListItemRow";
@@ -50,35 +50,41 @@ export default function ListDetailScreen() {
         }}
       />
 
-      <View className="flex-1 bg-primary p-4">
-        <FlatList
-          data={list.items}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <ListItemRow
-              item={item}
-              onToggle={(id) => toggleItem(list.id, id)}
-              onDelete={(id) => deleteItem(list.id, id)}
-              onUpdate={(id, updates) => updateItem(list.id, id, updates)}
-            />
-          )}
-          contentContainerStyle={{ paddingBottom: 96 }}
-        />
-
-        {/* Floating Add Button */}
-        <Pressable
-          onPress={() => setAddOpen(true)}
-          className="absolute bottom-8 right-8 w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg"
-        >
-          <Text className="text-white text-3xl leading-none">+</Text>
-        </Pressable>
-
-        <CreateItemModal
-          visible={addOpen}
-          onClose={() => setAddOpen(false)}
-          onSubmit={(text) => addItem(list.id, text)}
-        />
+    <ScrollView className="flex-1 bg-primary p-5 min-h-full">
+      {/* Header */}
+      <View className="flex-row mb-4">
+        <Text className="text-white text-lg font-semibold flex-1 ml-2">
+          {list.title}
+        </Text>
       </View>
+      
+      <FlatList
+        data={list.items}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <ListItemRow
+            item={item}
+            onToggle={(id) => toggleItem(list.id, id)}
+            onDelete={(id) => deleteItem(list.id, id)}
+            onUpdate={(id, updates) => updateItem(list.id, id, updates)}
+          />
+        )}
+        contentContainerStyle={{ paddingBottom: 96 }}
+      />
+    </ScrollView>
+
+    {/* Floating Add Button */}
+    <Pressable
+      onPress={() => setAddOpen(true)}
+      className="absolute bottom-8 right-8 w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg"
+    >
+      <Text className="text-white text-3xl leading-none">+</Text>
+    </Pressable>
+    <CreateItemModal
+      visible={addOpen}
+      onClose={() => setAddOpen(false)}
+      onSubmit={(text) => addItem(list.id, text)}
+      />
     </>
   );
 }

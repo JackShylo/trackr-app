@@ -92,7 +92,7 @@ const confirmDelete = (event: GestureResponderEvent) => {
 
       {/* Chevron */}
       <Pressable onPress={onOpenMenu} className="p-2">
-        <Ionicons name="ellipsis-vertical" size={20} />
+        <Ionicons name="ellipsis-vertical" color="white" size={20} />
       </Pressable>
     </Pressable>
   );

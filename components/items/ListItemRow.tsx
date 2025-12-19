@@ -147,60 +147,18 @@ return (
           { transform: [{ translateX }] },
           styles.card
         ]}
+        className="p-4 flex-row items-center"
       >
         <Pressable
           className="flex-1 min-h-100 min-w-100 justify-center px-4"
           onLongPress={() => !editing && setEditVisible(true)}
         >
-          {editing ? (
-            <>
-              <TextInput
-                style={styles.input}
-                value={text}
-                onChangeText={setText}
-                onBlur={() => save()}
-              />
-            </>
-          ) : (
-            <Text style={[styles.itemTitle, item.completed && styles.completed]}>
-              {item.title}
-            </Text>
-          )}
-
-        {/* Expanded section */}
-        {expanded && (
-          <View style={styles.expand}>
-            {editing ? (
-              <>
-                <TextInput
-                  style={[styles.input, styles.notes]}
-                  value={category}
-                  onChangeText={setCategory}
-                  placeholder="Category (optional)"
-                  autoCapitalize="words"
-                  returnKeyType="next"
-                />
-                <TextInput
-                  ref={notesRef}
-                  style={[styles.input, styles.notes]}
-                  value={item.notes}
-                  onChangeText={setNotes}
-                  placeholder="Notes (optional)"
-                  multiline
-                  onBlur={save}
-                />
-              </>
-            ) : (
-              <>
-                {!!item.notes && (
-                  <Text style={styles.notesText} className="">{item.notes}</Text>
-                )}
-              </>
-            )}
-          </View>
-        )}
-          
+          <Text className="font-medium" style={[item.completed && styles.completed]}>
+            {item.title}
+          </Text>
         </Pressable>
+
+        {/*
           <Ionicons
             name={expanded ? "chevron-up" : "chevron-down"}
             size={20}
@@ -208,6 +166,7 @@ return (
             onPress={() => setExpanded((v) => !v)}
             className="absolute right-4"
           />
+        */}
       </Animated.View>
 
       <UpdateItemModal

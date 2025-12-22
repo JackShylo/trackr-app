@@ -76,9 +76,9 @@ export default function ListDetailScreen() {
     {/* Floating Add Button */}
     <Pressable
       onPress={() => setAddOpen(true)}
-      className="absolute bottom-8 right-8 w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg"
+      className="absolute left-0 right-0 bottom-2 m-auto w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg z-999"
     >
-      <Text className="text-white text-3xl leading-none">+</Text>
+      <Text className="relative -top-1 left-0 bottom-1 right-0 m-auto text-white text-4xl">+</Text>
     </Pressable>
     <CreateItemModal
       visible={addOpen}

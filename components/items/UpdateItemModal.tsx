@@ -29,12 +29,12 @@ export default function UpdateItemModal({ visible, list, onClose, onSave }: Prop
     >
       <View className="flex-1 bg-black/40 justify-center items-center px-4">
         <KeyboardAvoidingView behavior="padding" className="w-full">
-          <View className="bg-white rounded-2xl p-5 shadow-lg">
-            <Text className="text-lg font-semibold mb-4">Edit Todo</Text>
+          <View className="bg-gray-800 rounded-2xl p-5 shadow-lg">
+            <Text className="text-lg text-white font-semibold mb-4">Edit Todo</Text>
 
             {/* Title */}
             <TextInput
-              className="border border-gray-300 rounded-xl px-4 py-3 text-base mb-3"
+              className="bg-gray-900 border border-gray-300 rounded-xl px-4 py-3 text-white mb-3"
               value={text}
               onChangeText={setText}
               placeholder="Title"
@@ -49,35 +49,33 @@ export default function UpdateItemModal({ visible, list, onClose, onSave }: Prop
 
             {/* Category */}
             <TextInput
-              className="border border-gray-300 rounded-xl px-4 py-3 text-base mb-4"
+              className="bg-gray-900 border border-gray-300 rounded-xl px-4 py-3 text-white mb-4"
               value={category}
               onChangeText={setCategory}
               placeholder="Category (optional)"
             />
 
-            {/* Actions */}
-            <View className="flex-row justify-end space-x-5">
-              <Pressable onPress={onClose}>
-                <Text className="text-gray-500 text-base">Cancel</Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => {
-                  if (list) {
-                    onSave(
-                      list.id,
-                      { title: text.trim(), category: category.trim() || undefined }
-                    );
-                  }
-                  onClose();
-                }}
-              >
-                <Text className="text-blue-600 font-semibold text-base">
-                  Save
-                </Text>
-              </Pressable>
-            </View>
+          {/* Actions */}
+          <View className="flex-row justify-end">
+            <Pressable
+              className="m-1 bg-green-500 px-4 py-2 rounded-lg"
+              onPress={() => {
+                if (list) {
+                  onSave(
+                    list.id,
+                    { title: text.trim(), category: category.trim() || undefined }
+                  );
+                }
+                onClose();
+              }}
+            >
+              <Text className="font-semibold text-white">Save</Text>
+            </Pressable>
+            <Pressable className="m-1 bg-red-500 px-4 py-2 rounded-lg" onPress={onClose}>
+              <Text className="font-semibold text-white">Cancel</Text>
+            </Pressable>
           </View>
+        </View>
         </KeyboardAvoidingView>
       </View>
     </Modal>

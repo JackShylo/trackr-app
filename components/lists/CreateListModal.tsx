@@ -40,7 +40,7 @@ export default function CreateListModal({ visible, onClose, onSubmit }: Props) {
         <View className="w-4/5 bg-gray-800 rounded-xl p-5 shadow-lg">
           <Text className="text-lg text-white font-semibold mb-4">Add List</Text>
           <TextInput
-            className="bg-gray-900 text-white p-3 rounded-lg mb-4 text-base"
+            className="bg-gray-900 text-white p-3 rounded-lg mb-4 text-white"
             placeholder="List Title"
             value={title}
             onChangeText={setTitle}

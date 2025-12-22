@@ -115,9 +115,9 @@ export default function ListItemRow({ item, onToggle, onDelete, onUpdate }: Prop
 });
 
 return (
-    <View style={styles.container}>
+    <View className="relative mb-4 overflow-clip">
     {/* Edit background */}
-      <View className="absolute left-0 top-0 bottom-0 bg-green-500 justify-center items-start pl-5 w-1/2">
+      <View className="absolute left-0 top-0 bottom-0 bg-green-500 justify-center items-start pl-5 w-1/2 rounded-xl">
         <Animated.View
           style={{
             opacity: editIconOpacity,
@@ -129,7 +129,7 @@ return (
       </View>
 
       {/* Delete background */}
-      <View className="absolute right-0 top-0 bottom-0 bg-red-500 justify-center items-end pr-5 w-1/2">
+      <View className="absolute right-0 top-0 bottom-0 bg-red-500 justify-center items-end pr-5 w-1/2 rounded-xl">
         <Animated.View
           style={{
             opacity: iconOpacity,
@@ -147,13 +147,12 @@ return (
           { transform: [{ translateX }] },
           styles.card
         ]}
-        className="p-4 flex-row items-center"
       >
         <Pressable
-          className="flex-1 min-h-100 min-w-100 justify-center px-4"
-          onLongPress={() => !editing && setEditVisible(true)}
+          className="flex-1 px-4 py-4"
+          onLongPress={() => setEditVisible(true)}
         >
-          <Text className="font-medium" style={[item.completed && styles.completed]}>
+          <Text className="font-medium text-white" style={[item.completed && styles.completed]}>
             {item.title}
           </Text>
         </Pressable>
@@ -188,66 +187,14 @@ const styles = StyleSheet.create({
     overflow: "hidden", // ensures delete bg respects rounded corners
   },
   card: {
-    backgroundColor: "white",
+    backgroundColor: "#1F2937",
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
     height: "100%",
-    zIndex: 1
-  },
-  itemTitle: {
-    fontSize: 16,
-    color: "#111827",
-  },
-  input: {
-    fontSize: 16,
-    paddingVertical: 8
-  },
-  editBackground: {
-    position: "absolute",
-    left: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: "#48bb78",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    paddingLeft: 20,
-    width: "50%"
-  },
-  deleteBackground: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor: "#EF4444",
-    justifyContent: "center",
-    alignItems: "flex-end",
-    paddingRight: 20,
-    width: "50%"
-  },
-  text: {
-    fontSize: 16,
-    color: "#111827",
   },
   completed: {
     textDecorationLine: "line-through",
     color: "#9CA3AF",
-  },
-  expand: {
-    marginTop: 10,
-    gap: 8,
-  },
-  notes: {
-    minHeight: 80,
-    textAlignVertical: "top",
-  },
-  notesText: {
-    color: "#4B5563",
-    lineHeight: 20,
   }
 });

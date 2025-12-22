@@ -1,6 +1,6 @@
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
-import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
+import { View, Text, FlatList, Pressable, ScrollView, Alert, Platform } from "react-native";
 import CreateListModal from "@/components/lists/CreateListModal";
 import ListCard from "@/components/lists/ListCard";
 import ListActionsSheet from "@/components/lists/ListActionsSheet";
@@ -44,7 +44,6 @@ export default function ListsScreen() {
             <ListCard
               list={item}
               onPress={() => router.push(`/lists/${item.id}`)}
-              onDelete={() => deleteList(item.id)}
               onOpenMenu={() => {
                 setSelectedList(lists.find((l) => l.id === item.id) || null);
                 setSheetOpen(true);
@@ -58,8 +57,23 @@ export default function ListsScreen() {
                 setEditVisible(true);
               }}
               onDelete={() => {
+                const message = "Are you sure you want to delete this list?";
+                if (Platform.OS === "web") {
+                  if (window.confirm(message)) {
+                    console.log(item.id)
+                    deleteList(selectedList!.id);
+                  }
+                } else {
+                    Alert.alert(
+                    "Confirm",
+                      message,
+                    [
+                      { text: "Cancel", style: "cancel" },
+                      { text: "Delete", style: "destructive", onPress() {deleteList(item.id)}}
+                    ]
+                  );
+                }
                 setSheetOpen(false);
-                deleteList(selectedList!.id);
               }}
             />
             <UpdateListModal
@@ -86,7 +100,7 @@ export default function ListsScreen() {
       onPress={() => setAddOpen(true)}
       className="absolute left-0 right-0 bottom-2 m-auto w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg z-999"
     >
-      <Text className="text-white text-3xl leading-none">+</Text>
+      <Text className="relative -top-1 left-0 bottom-1 right-0 m-auto text-white text-4xl">+</Text>
     </Pressable>
 
     <CreateListModal

@@ -12,12 +12,12 @@ export default function SettingsScreen() {
       </Text>
 
       <Section title="Appearance">
-        <Row label="Theme" value="System" />
+        <Row label="Theme" value="Default" />
       </Section>
 
       <Section title="Behavior">
         <Row label="Default Sort" value="Chronological" />
-        <Row label="Confirm Deletes" />
+        <Row label="Confirm Deletes" value="True" />
       </Section>
 
       <Section title="Data">

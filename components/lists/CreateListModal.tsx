@@ -1,18 +1,28 @@
+import { List } from "@/types/List";
 import { useState } from "react";
 import { Modal, View, Text, TextInput, Pressable, TouchableWithoutFeedback } from "react-native";
+import ListIconPicker from "./ListIconPicker";
+import { Ionicons } from "@expo/vector-icons";
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSubmit: (title: string) => void;
+  onSubmit: (title: string, icon?: ListIcon) => void;
 }
+
+export type ListIcon = {
+  name: keyof typeof Ionicons.glyphMap;
+  color: string;
+};
 
 export default function CreateListModal({ visible, onClose, onSubmit }: Props) {
   const [title, setTitle] = useState("");
+  const [icon, setIcon] = useState<ListIcon | undefined>();
 
   const handleAdd = () => {
     if (title.trim()) {
-      onSubmit(title.trim());
+      onSubmit(title.trim(), icon);
+      setIcon(undefined);
       setTitle("");
       onClose();
     }
@@ -46,6 +56,9 @@ export default function CreateListModal({ visible, onClose, onSubmit }: Props) {
             onChangeText={setTitle}
             autoFocus
           />
+
+          <ListIconPicker value={icon} onChange={setIcon} />
+          
           <View className="flex-row justify-end">
             <Pressable className=" m-1 bg-green-500 px-4 py-2 rounded-lg" onPress={handleAdd}>
               <Text className="font-semibold text-white">Add</Text>

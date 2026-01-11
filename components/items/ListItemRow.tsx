@@ -29,6 +29,7 @@ export default function ListItemRow({ item, onToggle, onDelete, onUpdate }: Prop
   const editThreshold = 120;
   const deleteThreshold = -120;
 
+
   useEffect(() => {
     setText(item.title);
     setNotes(item.notes ?? "");
@@ -115,9 +116,9 @@ export default function ListItemRow({ item, onToggle, onDelete, onUpdate }: Prop
 });
 
 return (
-    <View className="relative mb-4 overflow-clip">
+    <View className="relative mb-4 overflow-hidden rounded-2xl">
     {/* Edit background */}
-      <View className="absolute left-0 top-0 bottom-0 bg-green-500 justify-center items-start pl-5 w-1/2 rounded-xl">
+      <View className="absolute inset-y-0 left-0 w-1/2 bg-green-500 justify-center items-start pl-5">
         <Animated.View
           style={{
             opacity: editIconOpacity,
@@ -129,7 +130,7 @@ return (
       </View>
 
       {/* Delete background */}
-      <View className="absolute right-0 top-0 bottom-0 bg-red-500 justify-center items-end pr-5 w-1/2 rounded-xl">
+      <View className="absolute inset-y-0 right-0 w-1/2 bg-red-500 justify-center items-end pr-5">
         <Animated.View
           style={{
             opacity: iconOpacity,
@@ -143,20 +144,18 @@ return (
       {/* Foreground swipeable card */}
       <Animated.View
         {...pan.panHandlers}
-        style={[
-          { transform: [{ translateX }] },
-          styles.card
-        ]}
+        style={[{ transform: [{ translateX }] }, styles.card]}
       >
         <Pressable
-          className="flex-1 px-4 py-4"
           onLongPress={() => setEditVisible(true)}
+          className="p-5"
         >
           <Text className="font-medium text-white" style={[item.completed && styles.completed]}>
             {item.title}
           </Text>
         </Pressable>
-
+      </Animated.View>
+      
         {/*
           <Ionicons
             name={expanded ? "chevron-up" : "chevron-down"}
@@ -166,7 +165,6 @@ return (
             className="absolute right-4"
           />
         */}
-      </Animated.View>
 
       <UpdateItemModal
         visible={editVisible}
@@ -174,25 +172,21 @@ return (
         onClose={() => setEditVisible(false)}
         onSave={onUpdate!}
       />
+
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    position: "relative",
-    marginBottom: 10,
-    minHeight: 60,
-    borderRadius: 12,
-    overflow: "hidden", // ensures delete bg respects rounded corners
-  },
-  card: {
-    backgroundColor: "#1F2937",
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 12,
-    height: "100%",
-  },
+card: {
+  flex: 1,
+  borderRadius: 16,
+  backgroundColor: "#1F2937",
+  shadowColor: "#000",
+  shadowOpacity: 0.08,
+  shadowRadius: 6,
+  elevation: 2,
+},
   completed: {
     textDecorationLine: "line-through",
     color: "#9CA3AF",

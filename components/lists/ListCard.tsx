@@ -9,6 +9,7 @@ interface ListCardProps {
 }
 
 export default function ListCard({ list, onPress, onOpenMenu }: ListCardProps) {
+  console.log(list);
   return (
     <Pressable
       onPress={onPress}
@@ -19,7 +20,7 @@ export default function ListCard({ list, onPress, onOpenMenu }: ListCardProps) {
         className="w-10 h-10 rounded-lg items-center justify-center mr-3"
         style={{ backgroundColor: list.color ?? "#2563EB" }}
       >
-        <Ionicons name="list-outline" size={20} color="white" />
+        <Ionicons name={list.icon && typeof list.icon.name === "string" ? list.icon.name : "list-outline"} size={20} color="white" />
       </View>
 
       {/* List Title */}

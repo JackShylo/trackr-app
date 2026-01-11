@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { List } from "../types/List";
 import { ListItem } from "../types/ListItem";
 import { loadLists, saveLists } from "../utils/storage";
+import { MAX_LISTS } from "@/constants/limits"
+import { Ionicons } from "@expo/vector-icons";
 
 interface ListsState {
   lists: List[];
@@ -9,12 +11,12 @@ interface ListsState {
 
   /* ─────────── Lists ─────────── */
   hydrate: () => Promise<void>;
-  addList: (title: string) => void;
+  addList: (title: string, icon?: { name: string; color: string }, description?: string) => void;
   updateList: (id: string, title: string) => void;
   deleteList: (id: string) => void;
 
   /* ─────────── Items ─────────── */
-  addItem: (listId: string, title: string) => void;
+  addItem: (listId: string, title: string, description: string) => void;
   updateItem: (
     listId: string,
     itemId: string,
@@ -39,15 +41,25 @@ export const useListsStore = create<ListsState>((set, get) => ({
   },
 
   /* ─────────── List Actions ─────────── */
-  addList: async (title) => {
+  addList: async (title, icon, description) => {
     const newList: List = {
       id: crypto.randomUUID(),
-      title,
       createdAt: Date.now(),
+      title,
+      description,
+      icon: icon
+        ? {
+            name: icon.name as keyof typeof Ionicons.glyphMap,
+            color: icon.color,
+          }
+        : undefined,
       items: [],
     };
 
     const lists = [...get().lists, newList];
+    if (lists.length >= MAX_LISTS) {
+    return false;
+    }
     set({ lists });
     await saveLists(lists);
   },

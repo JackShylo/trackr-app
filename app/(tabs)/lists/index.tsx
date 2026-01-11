@@ -7,6 +7,7 @@ import ListActionsSheet from "@/components/lists/ListActionsSheet";
 import UpdateListModal from "@/components/lists/UpdateListModal";
 import { useListsStore } from "@/store/useListStore";
 import { List } from "@/types/List";
+import { MAX_LISTS } from "@/constants/limits";
 
 
 export default function ListsScreen() {
@@ -27,7 +28,8 @@ export default function ListsScreen() {
 
   return (
     <>
-    <ScrollView className="flex-1 bg-primary p-5 min-h-full">
+    <View className="flex-1 bg-primary p-5 min-h-full">
+      <Text> TEST </Text>
       {/* Header */}
       <View className="flex-row mb-4">
         <Text className="text-white text-lg font-semibold flex-1">
@@ -93,10 +95,11 @@ export default function ListsScreen() {
             </Text>
           }
         />
-    </ScrollView>
+    </View>
 
     {/* Floating Add Button */}
     <Pressable
+      disabled={lists.length >= MAX_LISTS}
       onPress={() => setAddOpen(true)}
       className="absolute left-0 right-0 bottom-2 m-auto w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg z-999"
     >
@@ -106,7 +109,7 @@ export default function ListsScreen() {
     <CreateListModal
       visible={addOpen}
       onClose={() => setAddOpen(false)}
-      onSubmit={(title) => addList(title)}
+      onSubmit={(title, icon) => addList(title, icon)}
     />
   </>
   );

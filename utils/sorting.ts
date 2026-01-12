@@ -23,9 +23,24 @@ export const sortListsChronological = (lists: List[]) =>
   [...lists].sort((a, b) => a.createdAt - b.createdAt);
 
 export const sortLists = (lists: List[], mode: "chrono" | "alpha" | "custom") => {
-  if (mode === "alpha") return sortListsAlphabetical(lists);
-  if (mode === "chrono") return sortListsChronological(lists);
-  return lists; // custom order
+  // Separate pinned and unpinned
+  const pinned = lists.filter((l) => l.pinned);
+  const unpinned = lists.filter((l) => !l.pinned);
+
+  // Sort each group
+  let sortedPinned = pinned;
+  let sortedUnpinned = unpinned;
+
+  if (mode === "alpha") {
+    sortedPinned = sortListsAlphabetical(pinned);
+    sortedUnpinned = sortListsAlphabetical(unpinned);
+  } else if (mode === "chrono") {
+    sortedPinned = sortListsChronological(pinned);
+    sortedUnpinned = sortListsChronological(unpinned);
+  }
+
+  // Pinned items always come first
+  return [...sortedPinned, ...sortedUnpinned];
 };
 
 /* ─────────── List Items Sorting ─────────── */

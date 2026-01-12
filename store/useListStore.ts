@@ -4,23 +4,28 @@ import { ListItem } from "../types/ListItem";
 import { loadLists, saveLists } from "../utils/storage";
 import { MAX_LISTS } from "@/constants/limits"
 import { Ionicons } from "@expo/vector-icons";
+import uuid from "react-native-uuid";
 
 interface ListsState {
   lists: List[];
   hydrated: boolean;
+  lastAction?: { type: string; undo: () => Promise<void> };
 
   /* ─────────── Lists ─────────── */
   hydrate: () => Promise<void>;
   addList: (title: string, icon?: { name: string; color: string }) => void;
   updateList: (id: string, title: string, icon?: { name: string; color: string }) => void;
   deleteList: (id: string) => void;
+  cloneList: (id: string) => void;
+  togglePinList: (id: string) => void;
+  undo: () => Promise<void>;
 
   /* ─────────── Items ─────────── */
-  addItem: (listId: string, title: string, description: string) => void;
+  addItem: (listId: string, title: string, description: string, notes?: string, category?: string, priority?: "low" | "medium" | "high", dueDate?: number) => void;
   updateItem: (
     listId: string,
     itemId: string,
-    updates: Partial<Pick<ListItem, "title" | "notes" | "category">>
+    updates: Partial<Pick<ListItem, "title" | "notes" | "category" | "priority" | "dueDate">>
   ) => void;
   toggleItem: (listId: string, itemId: string) => void;
   deleteItem: (listId: string, itemId: string) => void;
@@ -43,7 +48,7 @@ export const useListsStore = create<ListsState>((set, get) => ({
   /* ─────────── List Actions ─────────── */
   addList: async (title, icon) => {
     const newList: List = {
-      id: crypto.randomUUID(),
+      id: uuid.v4() as string,
       createdAt: Date.now(),
       title,
       icon: icon
@@ -84,22 +89,88 @@ export const useListsStore = create<ListsState>((set, get) => ({
   },
 
   deleteList: async (id) => {
-    const lists = get().lists.filter((l) => l.id !== id);
+    const oldLists = get().lists;
+    const lists = oldLists.filter((l) => l.id !== id);
+    set({ 
+      lists,
+      lastAction: {
+        type: "deleteList",
+        undo: async () => {
+          set({ lists: oldLists, lastAction: undefined });
+          await saveLists(oldLists);
+        }
+      }
+    });
+    await saveLists(lists);
+  },
+
+  cloneList: async (id) => {
+    const currentLists = get().lists;
+    if (currentLists.length >= MAX_LISTS) return;
+
+    const listToClone = currentLists.find((l) => l.id === id);
+    if (!listToClone) return;
+
+    const clonedItems: ListItem[] = listToClone.items.map((item) => ({
+      ...item,
+      id: uuid.v4() as string,
+    }));
+
+    const clonedList: List = {
+      ...listToClone,
+      id: uuid.v4() as string,
+      title: `${listToClone.title} (Copy)`,
+      createdAt: Date.now(),
+      items: clonedItems,
+    };
+
+    const lists = [...currentLists, clonedList];
     set({ lists });
     await saveLists(lists);
   },
 
+  togglePinList: async (id) => {
+    const oldLists = get().lists;
+    const lists = oldLists.map((l) =>
+      l.id === id ? { ...l, pinned: !l.pinned } : l
+    );
+    set({ 
+      lists,
+      lastAction: {
+        type: "togglePin",
+        undo: async () => {
+          set({ lists: oldLists, lastAction: undefined });
+          await saveLists(oldLists);
+        }
+      }
+    });
+    await saveLists(lists);
+  },
+
+  undo: async () => {
+    const lastAction = get().lastAction;
+    if (lastAction) {
+      await lastAction.undo();
+      set({ lastAction: undefined });
+    }
+  },
+
   /* ─────────── Item Actions ─────────── */
-  addItem: async (listId, title) => {
+  addItem: async (listId, title, description, notes, category, priority, dueDate) => {
+    const oldLists = get().lists;
     const lists = get().lists.map((list) => {
       if (list.id !== listId) return list;
 
       const newItem: ListItem = {
-        id: crypto.randomUUID(),
+        id: uuid.v4() as string,
         title,
         completed: false,
         createdAt: Date.now(),
         order: list.items.length,
+        notes,
+        category,
+        priority,
+        dueDate,
       };
 
       return {
@@ -108,7 +179,16 @@ export const useListsStore = create<ListsState>((set, get) => ({
       };
     });
 
-    set({ lists });
+    set({ 
+      lists,
+      lastAction: {
+        type: "addItem",
+        undo: async () => {
+          set({ lists: oldLists, lastAction: undefined });
+          await saveLists(oldLists);
+        }
+      }
+    });
     await saveLists(lists);
   },
 
@@ -146,8 +226,9 @@ export const useListsStore = create<ListsState>((set, get) => ({
     await saveLists(lists);
   },
 
-  deleteItem: (listId, itemId) => {
-    const lists = get().lists.map((list) => {
+  deleteItem: async (listId, itemId) => {
+    const oldLists = get().lists;
+    const lists = oldLists.map((list) => {
       if (list.id !== listId) return list;
 
       const items = list.items
@@ -157,8 +238,17 @@ export const useListsStore = create<ListsState>((set, get) => ({
       return { ...list, items };
     });
 
-    set({ lists });
-    saveLists(lists);
+    set({ 
+      lists,
+      lastAction: {
+        type: "deleteItem",
+        undo: async () => {
+          set({ lists: oldLists, lastAction: undefined });
+          await saveLists(oldLists);
+        }
+      }
+    });
+    await saveLists(lists);
   },
 
   reorderItems: (listId, items) => {

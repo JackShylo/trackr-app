@@ -77,32 +77,37 @@ export default function ListItemRow({ item, onToggle, onDelete, onUpdate }: Prop
   {/* PanResponder for swipe gestures */}
   const pan = PanResponder.create({
     onMoveShouldSetPanResponder: (_, gesture) => {
-  if (editing) return false;
-    const isHorizontalSwipe =
-      Math.abs(gesture.dx) > SWIPE_ACTIVATION_DISTANCE &&
-      Math.abs(gesture.dy) < VERTICAL_SWIPE_LIMIT;
-    return isHorizontalSwipe;
-  },
+      if (editing) return false;
+      // Be more strict: require significant horizontal movement and minimal vertical movement
+      const isHorizontalSwipe =
+        Math.abs(gesture.dx) > SWIPE_ACTIVATION_DISTANCE &&
+        Math.abs(gesture.dy) < VERTICAL_SWIPE_LIMIT &&
+        Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.5; // 1.5x more horizontal than vertical
+      return isHorizontalSwipe;
+    },
 
-  onPanResponderMove: (_, gesture) => {
-    const clampedDx = Math.max(-160, Math.min(160, gesture.dx));
-    translateX.setValue(clampedDx);
-  },
+    onPanResponderMove: (_, gesture) => {
+      // Only move if it's a clear horizontal swipe
+      if (Math.abs(gesture.dx) > Math.abs(gesture.dy)) {
+        const clampedDx = Math.max(-160, Math.min(160, gesture.dx));
+        translateX.setValue(clampedDx);
+      }
+    },
 
-  onPanResponderRelease: (_, gesture) => {
-    if (gesture.dx < deleteThreshold) {
-      // DELETE
-      Animated.timing(translateX, {
-        toValue: -300,
-        duration: 150,
-        useNativeDriver: true,
-      }).start(() => onDelete!(item.id));
-      return;
-    }
+    onPanResponderRelease: (_, gesture) => {
+      if (gesture.dx < deleteThreshold) {
+        // DELETE
+        Animated.timing(translateX, {
+          toValue: -300,
+          duration: 150,
+          useNativeDriver: true,
+        }).start(() => onDelete!(item.id));
+        return;
+      }
 
-  if (gesture.dx > editThreshold) {
-    // ENTER EDIT MODE IMMEDIATELY
-    onToggle!(item.id);
+      if (gesture.dx > editThreshold) {
+        // ENTER EDIT MODE IMMEDIATELY
+        onToggle!(item.id);
 
     Animated.spring(translateX, {
       toValue: 0,
@@ -154,11 +159,51 @@ return (
       >
         <Pressable
           onLongPress={() => setEditVisible(true)}
-          className="p-5"
+          className="p-4"
         >
-          <Text className="font-medium" style={[{ color: themeConfig.text }, item.completed && { textDecorationLine: "line-through", color: themeConfig.textSecondary }]}>
-            {item.title}
-          </Text>
+          <View className="flex-row items-start gap-3">
+            <View className="flex-1">
+              <Text className="font-medium" style={[{ color: themeConfig.text }, item.completed && { textDecorationLine: "line-through", color: themeConfig.textSecondary }]}>
+                {item.title}
+              </Text>
+              
+              {/* Badge row: priority + category + due date */}
+              {(item.priority || item.category || item.dueDate) && (
+                <View className="flex-row gap-2 mt-2 flex-wrap">
+                  {item.priority && (
+                    <View className="px-2 py-1 rounded" style={{ backgroundColor: item.priority === "high" ? "#fca5a5" : item.priority === "medium" ? "#fecaca" : "#fef3c7" }}>
+                      <Text className="text-xs font-semibold" style={{ color: item.priority === "high" ? "#991b1b" : item.priority === "medium" ? "#b91c1c" : "#92400e" }}>
+                        {item.priority.charAt(0).toUpperCase() + item.priority.slice(1)}
+                      </Text>
+                    </View>
+                  )}
+                  
+                  {item.category && (
+                    <View className="px-2 py-1 rounded" style={{ backgroundColor: themeConfig.primaryLight }}>
+                      <Text className="text-xs font-semibold" style={{ color: themeConfig.primary }}>
+                        {item.category}
+                      </Text>
+                    </View>
+                  )}
+                  
+                  {item.dueDate && (
+                    <View className="px-2 py-1 rounded" style={{ backgroundColor: new Date(item.dueDate) < new Date() ? "#fecaca" : themeConfig.primaryLight }}>
+                      <Text className="text-xs font-semibold" style={{ color: new Date(item.dueDate) < new Date() ? "#b91c1c" : themeConfig.primary }}>
+                        {new Date(item.dueDate).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
+              
+              {/* Notes preview */}
+              {item.notes && (
+                <Text className="text-xs mt-2" style={{ color: themeConfig.textSecondary }}>
+                  {item.notes.substring(0, 60)}{item.notes.length > 60 ? "..." : ""}
+                </Text>
+              )}
+            </View>
+          </View>
         </Pressable>
       </Animated.View>
 

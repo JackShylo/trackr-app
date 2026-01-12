@@ -1,6 +1,7 @@
 import { View, Text, FlatList, Pressable, ScrollView } from "react-native";
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import ListItemRow from "../../../components/items/ListItemRow";
 import CreateItemModal from "../../../components/items/CreateItemModal";
 import SortOrderDropdown from "../../../components/ui/SortOrderDropdown";
@@ -68,7 +69,7 @@ export default function ListDetailScreen() {
         }}
       />
 
-    <View className="flex-1 min-h-full" style={{ backgroundColor: themeConfig.background }}>
+    <SafeAreaView className="flex-1 min-h-full" style={{ backgroundColor: themeConfig.background }}>
       {/* Header */}
       <View className="flex-row items-center p-4 gap-3 z-10" style={{ backgroundColor: themeConfig.primary }}>
         <Text className="text-lg font-semibold flex-1 ml-2" style={{ color: themeConfig.text }}>
@@ -97,19 +98,24 @@ export default function ListDetailScreen() {
         )}
         contentContainerStyle={{ paddingBottom: 96 }}
       />
-    </View>
+    </SafeAreaView>
 
     {/* Floating Add Button */}
     <Pressable
       onPress={() => setAddOpen(true)}
-      className="absolute left-0 right-0 bottom-2 m-auto w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg z-999"
+      className="w-14 h-14 rounded-full bg-blue-500 items-center justify-center shadow-lg z-50"
+      style={{
+        position: 'absolute',
+        bottom: 24,
+        alignSelf: 'center',
+      }}
     >
-      <Text className="relative -top-1 left-0 bottom-1 right-0 m-auto text-white text-4xl">+</Text>
+      <Text className="text-white text-4xl font-bold">+</Text>
     </Pressable>
     <CreateItemModal
       visible={addOpen}
       onClose={() => setAddOpen(false)}
-      onSubmit={(text) => addItem(list.id, text, )}
+      onSubmit={(title, description, notes, category, priority, dueDate) => addItem(list.id, title, description, notes, category, priority, dueDate)}
       />
     </>
   );

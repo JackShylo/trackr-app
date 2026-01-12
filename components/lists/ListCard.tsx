@@ -8,15 +8,17 @@ interface ListCardProps {
   list: List;
   onPress: () => void;
   onOpenMenu?: () => void;
+  onLongPress?: () => void;
 }
 
-export default function ListCard({ list, onPress, onOpenMenu }: ListCardProps) {
+export default function ListCard({ list, onPress, onOpenMenu, onLongPress }: ListCardProps) {
   const theme = useSettingsStore((s) => s.theme);
   const themeConfig = THEMES[theme];
 
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
       className="rounded-xl p-4 mb-3 flex-row items-center"
       style={{ backgroundColor: themeConfig.surface }}
     >
@@ -43,6 +45,19 @@ export default function ListCard({ list, onPress, onOpenMenu }: ListCardProps) {
         >
           {list.items.length} item{list.items.length !== 1 ? "s" : ""}
         </Text>
+        
+        {/* Progress Bar */}
+        {list.items.length > 0 && (
+          <View className="mt-2 h-1.5 bg-gray-300 rounded-full overflow-hidden" style={{ backgroundColor: themeConfig.primaryLight }}>
+            <View
+              className="h-full"
+              style={{
+                width: `${(list.items.filter((i) => i.completed).length / list.items.length) * 100}%`,
+                backgroundColor: themeConfig.primary,
+              }}
+            />
+          </View>
+        )}
       </View>
 
       {/* Action Button */}

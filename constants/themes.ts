@@ -1,4 +1,4 @@
-export type Theme = "ocean" | "forest" | "sunset" | "slate";
+export type Theme = "ocean" | "forest" | "sunset" | "slate" | "pikachu" | "lavender" | "coral";
 
 export const THEMES = {
   ocean: {
@@ -40,6 +40,36 @@ export const THEMES = {
     surface: "#1e293b", // medium slate
     text: "#f1f5f9", // almost white
     textSecondary: "#cbd5e1", // light gray
+  },
+  pikachu: {
+    name: "Pikachu",
+    primary: "#dc2626", // dark red (for mouth/cheeks)
+    primaryLight: "#fbbf24", // bright yellow
+    accent: "#f59e0b", // amber
+    background: "#1f1410", // dark brown
+    surface: "#3d2817", // medium brown
+    text: "#fef3c7", // light yellow
+    textSecondary: "#fcd34d", // pale yellow
+  },
+  lavender: {
+    name: "Lavender",
+    primary: "#6d28d9", // deep purple
+    primaryLight: "#a78bfa", // light purple/lavender
+    accent: "#c084fc", // lighter purple
+    background: "#1e0a3f", // very dark purple
+    surface: "#3d1d56", // dark purple
+    text: "#f3e8ff", // off white
+    textSecondary: "#e9d5ff", // very light purple
+  },
+  coral: {
+    name: "Coral",
+    primary: "#be185d", // deep pink
+    primaryLight: "#f472b6", // light pink
+    accent: "#fb7185", // coral red
+    background: "#3d0a3d", // very dark pink
+    surface: "#6b1f47", // dark pink
+    text: "#fce7f3", // off white
+    textSecondary: "#fbcfe8", // light pink
   },
 } as const;
 

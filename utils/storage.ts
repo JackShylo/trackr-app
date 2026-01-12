@@ -9,6 +9,7 @@ export interface Settings {
   listSortMode?: "chrono" | "alpha" | "custom";
   itemSortMode?: "chrono" | "alpha" | "custom";
   theme?: Theme;
+  confirmDeletes?: boolean;
 }
 
 /* ─────────── Load ─────────── */

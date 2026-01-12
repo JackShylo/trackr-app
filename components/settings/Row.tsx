@@ -7,15 +7,16 @@ import { THEMES } from "@/constants/themes";
 interface RowProps {
     label?: string,
     value?: string,
-    danger?: boolean
+    danger?: boolean,
+    onPress?: () => void
 }
 
-export default function Row({ label, value, danger }: RowProps) {
+export default function Row({ label, value, danger, onPress }: RowProps) {
   const theme = useSettingsStore((s) => s.theme);
   const themeConfig = THEMES[theme];
 
   return (
-    <Pressable className="flex-row justify-between items-center px-4 py-3">
+    <Pressable onPress={onPress} className="flex-row justify-between items-center px-4 py-3">
       <Text style={{ color: danger ? "#ef4444" : themeConfig.text }}>
         {label}
       </Text>

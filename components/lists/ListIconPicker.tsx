@@ -8,21 +8,25 @@ export type ListIcon = {
 };
 
 interface Props {
-  value?: ListIcon;
-  onChange: (icon: ListIcon) => void;
+  visible: boolean;
+  onClose?: () => void;
+  onSelectIcon: (icon: { name: keyof typeof import("@expo/vector-icons").Ionicons.glyphMap; color: string }) => void;
+  selectedIcon?: { name: keyof typeof import("@expo/vector-icons").Ionicons.glyphMap; color: string };
 }
 
-export default function ListIconPicker({ value, onChange }: Props) {
+export default function ListIconPicker({ visible, onClose, onSelectIcon, selectedIcon }: Props) {
+  if (!visible) return null;
+
   return (
     <View className="flex-row flex-wrap gap-3">
       {LIST_ICONS.map((icon) => {
         const selected =
-          value?.name === icon.name && value?.color === icon.color;
+          selectedIcon?.name === icon.name && selectedIcon?.color === icon.color;
 
         return (
           <Pressable
             key={icon.name}
-            onPress={() => onChange(icon as ListIcon)}
+            onPress={() => onSelectIcon(icon as ListIcon)}
             className={`
               w-12 h-12 rounded-xl items-center justify-center
               ${selected ? "bg-white/20" : "bg-white/10"}

@@ -1,4 +1,3 @@
-import { List } from "@/types/List";
 import { useState } from "react";
 import { Modal, View, Text, TextInput, Pressable, TouchableWithoutFeedback } from "react-native";
 import ListIconPicker from "./ListIconPicker";
@@ -17,19 +16,20 @@ export type ListIcon = {
 
 export default function CreateListModal({ visible, onClose, onSubmit }: Props) {
   const [title, setTitle] = useState("");
-  const [icon, setIcon] = useState<ListIcon | undefined>();
+  const [selectedIcon, setSelectedIcon] = useState<ListIcon>();
 
   const handleAdd = () => {
-    if (title.trim()) {
-      onSubmit(title.trim(), icon);
-      setIcon(undefined);
+    if (title && selectedIcon) {
+      onSubmit(title.trim(), selectedIcon);
       setTitle("");
+      setSelectedIcon(undefined);
       onClose();
     }
   };
 
   const handleClose = () => {
     setTitle("");
+    setSelectedIcon(undefined);
     onClose();
   };
 
@@ -57,7 +57,13 @@ export default function CreateListModal({ visible, onClose, onSubmit }: Props) {
             autoFocus
           />
 
-          <ListIconPicker value={icon} onChange={setIcon} />
+        <ListIconPicker
+          visible={true}
+          onSelectIcon={(icon) => {
+            setSelectedIcon(icon);
+          }}
+          selectedIcon={selectedIcon}
+        />
           
           <View className="flex-row justify-end">
             <Pressable className=" m-1 bg-green-500 px-4 py-2 rounded-lg" onPress={handleAdd}>

@@ -11,8 +11,8 @@ interface ListsState {
 
   /* ─────────── Lists ─────────── */
   hydrate: () => Promise<void>;
-  addList: (title: string, icon?: { name: string; color: string }, description?: string) => void;
-  updateList: (id: string, title: string) => void;
+  addList: (title: string, icon?: { name: string; color: string }) => void;
+  updateList: (id: string, title: string, icon?: { name: string; color: string }) => void;
   deleteList: (id: string) => void;
 
   /* ─────────── Items ─────────── */
@@ -41,12 +41,11 @@ export const useListsStore = create<ListsState>((set, get) => ({
   },
 
   /* ─────────── List Actions ─────────── */
-  addList: async (title, icon, description) => {
+  addList: async (title, icon) => {
     const newList: List = {
       id: crypto.randomUUID(),
       createdAt: Date.now(),
       title,
-      description,
       icon: icon
         ? {
             name: icon.name as keyof typeof Ionicons.glyphMap,
@@ -54,6 +53,7 @@ export const useListsStore = create<ListsState>((set, get) => ({
           }
         : undefined,
       items: [],
+      pinned: false,
     };
 
     const lists = [...get().lists, newList];
@@ -64,9 +64,20 @@ export const useListsStore = create<ListsState>((set, get) => ({
     await saveLists(lists);
   },
 
-  updateList: async (id, title) => {
+  updateList: async (id, title, icon) => {
     const lists = get().lists.map((l) =>
-      l.id === id ? { ...l, title } : l
+      l.id === id
+        ? {
+            ...l,
+            title,
+            icon: icon
+              ? {
+                  name: icon.name as keyof typeof Ionicons.glyphMap,
+                  color: icon.color,
+                }
+              : undefined,
+          }
+        : l
     );
     set({ lists });
     await saveLists(lists);

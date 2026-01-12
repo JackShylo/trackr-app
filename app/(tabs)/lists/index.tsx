@@ -5,9 +5,13 @@ import CreateListModal from "@/components/lists/CreateListModal";
 import ListCard from "@/components/lists/ListCard";
 import ListActionsSheet from "@/components/lists/ListActionsSheet";
 import UpdateListModal from "@/components/lists/UpdateListModal";
+import SortOrderDropdown from "@/components/ui/SortOrderDropdown";
 import { useListsStore } from "@/store/useListStore";
+import { useSettingsStore } from "@/store/useSettingsStore";
 import { List } from "@/types/List";
 import { MAX_LISTS } from "@/constants/limits";
+import { sortLists } from "@/utils/sorting";
+import { THEMES } from "@/constants/themes";
 
 
 export default function ListsScreen() {
@@ -15,31 +19,49 @@ export default function ListsScreen() {
     if (!useListsStore.getState().hydrated) {
     useListsStore.getState().hydrate();
     }
+    if (!useSettingsStore.getState().hydrated) {
+    useSettingsStore.getState().hydrate();
+    }
   }, []);
 
   const [addOpen, setAddOpen] = useState(false);
   const [selectedList, setSelectedList] = useState<List | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
   const lists = useListsStore((s) => s.lists);
   const deleteList = useListsStore((s) => s.deleteList);
   const addList = useListsStore((s) => s.addList);
+  
+  const theme = useSettingsStore((s) => s.theme);
+  const themeConfig = THEMES[theme];
+  const listSortMode = useSettingsStore((s) => s.listSortMode);
+  const setListSortMode = useSettingsStore((s) => s.setListSortMode);
+
+  const sortedLists = sortLists(lists, listSortMode);
 
   return (
     <>
-    <View className="flex-1 bg-primary p-5 min-h-full">
-      <Text> TEST </Text>
+    <View className="flex-1 min-h-full" style={{ backgroundColor: themeConfig.background }}>
       {/* Header */}
-      <View className="flex-row mb-4">
-        <Text className="text-white text-lg font-semibold flex-1">
+      <View className="flex-row items-center p-4 gap-3 z-10" style={{ backgroundColor: themeConfig.primary }}>
+        <Text className="text-lg font-semibold flex-1" style={{ color: themeConfig.text }}>
           My Lists
         </Text>
+        <SortOrderDropdown
+          value={listSortMode}
+          onChange={(mode) => setListSortMode(mode)}
+          open={sortDropdownOpen}
+          onToggle={() => setSortDropdownOpen(!sortDropdownOpen)}
+          onClose={() => setSortDropdownOpen(false)}
+        />
       </View>
 
       {/* Lists */}
         <FlatList
-          data={lists}
+          className="flex-1 p-4"
+          data={sortedLists}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <>
@@ -47,7 +69,7 @@ export default function ListsScreen() {
               list={item}
               onPress={() => router.push(`/lists/${item.id}`)}
               onOpenMenu={() => {
-                setSelectedList(lists.find((l) => l.id === item.id) || null);
+                setSelectedList(sortedLists.find((l) => l.id === item.id) || null);
                 setSheetOpen(true);
               }}
             />
@@ -79,11 +101,13 @@ export default function ListsScreen() {
               }}
             />
             <UpdateListModal
+              initialTitle={selectedList?.title}
+              initialIcon={selectedList?.icon}
               visible={editVisible}
               onClose={() => setEditVisible(false)}
-              onSave={(title) => {
+              onSave={(title, icon) => {
                 if (selectedList) {
-                  useListsStore.getState().updateList(selectedList.id, title);
+                  useListsStore.getState().updateList(selectedList.id, title, icon);
                 }
               }}
             />

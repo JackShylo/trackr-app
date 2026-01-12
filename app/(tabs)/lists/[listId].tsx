@@ -3,11 +3,16 @@ import { Stack, useLocalSearchParams } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import ListItemRow from "../../../components/items/ListItemRow";
 import CreateItemModal from "../../../components/items/CreateItemModal";
+import SortOrderDropdown from "../../../components/ui/SortOrderDropdown";
 import { useListsStore } from "../../../store/useListStore";
+import { useSettingsStore } from "../../../store/useSettingsStore";
+import { sortItems } from "../../../utils/sorting";
+import { THEMES } from "../../../constants/themes";
 
 export default function ListDetailScreen() {
   const { listId } = useLocalSearchParams<{ listId: string }>();
   const [addOpen, setAddOpen] = useState(false);
+  const [sortDropdownOpen, setSortDropdownOpen] = useState(false);
 
   const hydrate = useListsStore((s) => s.hydrate);
   const hydrated = useListsStore((s) => s.hydrated);
@@ -21,10 +26,21 @@ export default function ListDetailScreen() {
   const deleteItem = useListsStore((s) => s.deleteItem);
   const toggleItem = useListsStore((s) => s.toggleItem);
 
+  const itemSortMode = useSettingsStore((s) => s.itemSortMode);
+  const setItemSortMode = useSettingsStore((s) => s.setItemSortMode);
+  const theme = useSettingsStore((s) => s.theme);
+  const themeConfig = THEMES[theme];
+
   /* ─────────── Hydrate once ─────────── */
   useEffect(() => {
     hydrate();
   }, [hydrate]);
+
+  useEffect(() => {
+    if (!useSettingsStore.getState().hydrated) {
+      useSettingsStore.getState().hydrate();
+    }
+  }, []);
 
   if (!hydrated) {
     return (
@@ -42,6 +58,8 @@ export default function ListDetailScreen() {
     );
   }
 
+  const sortedItems = sortItems(list.items, itemSortMode);
+
   return (
     <>
       <Stack.Screen
@@ -50,16 +68,24 @@ export default function ListDetailScreen() {
         }}
       />
 
-    <ScrollView className="flex-1 bg-primary p-5 min-h-full">
+    <View className="flex-1 min-h-full" style={{ backgroundColor: themeConfig.background }}>
       {/* Header */}
-      <View className="flex-row mb-4">
-        <Text className="text-white text-lg font-semibold flex-1 ml-2">
+      <View className="flex-row items-center p-4 gap-3 z-10" style={{ backgroundColor: themeConfig.primary }}>
+        <Text className="text-lg font-semibold flex-1 ml-2" style={{ color: themeConfig.text }}>
           {list.title}
         </Text>
+        <SortOrderDropdown
+          value={itemSortMode}
+          onChange={(mode) => setItemSortMode(mode)}
+          open={sortDropdownOpen}
+          onToggle={() => setSortDropdownOpen(!sortDropdownOpen)}
+          onClose={() => setSortDropdownOpen(false)}
+        />
       </View>
       
       <FlatList
-        data={list.items}
+        className="flex-1 p-4 min-h-[400px]"
+        data={sortedItems}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <ListItemRow
@@ -71,7 +97,7 @@ export default function ListDetailScreen() {
         )}
         contentContainerStyle={{ paddingBottom: 96 }}
       />
-    </ScrollView>
+    </View>
 
     {/* Floating Add Button */}
     <Pressable
@@ -83,7 +109,7 @@ export default function ListDetailScreen() {
     <CreateItemModal
       visible={addOpen}
       onClose={() => setAddOpen(false)}
-      onSubmit={(text) => addItem(list.id, text)}
+      onSubmit={(text) => addItem(list.id, text, )}
       />
     </>
   );

@@ -24,7 +24,7 @@ export default function SortDropdown({
     "Oldest";
 
   return (
-    <View className="relative">
+    <View className="relative z-50" style={{ zIndex: 50, elevation: 50 }}>
       {/* Button */}
       <Pressable
         onPress={onToggle}
@@ -41,12 +41,12 @@ export default function SortDropdown({
           <Pressable
             onPress={onClose}
             className="absolute inset-0"
-            style={{ zIndex: 10 }}
+            style={{ zIndex: 50 }}
           />
 
           <View
-            className="absolute top-8 right-0 bg-white rounded-lg shadow w-40 z-20"
-            style={{ zIndex: 20, elevation: 10 }}
+            className="absolute top-8 right-0 bg-white rounded-lg shadow w-40"
+            style={{ zIndex: 51, elevation: 51 }}
           >
             <Option
               label="Custom order"

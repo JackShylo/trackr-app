@@ -1,9 +1,9 @@
 export interface ListItem {
   id: string;
+  createdAt: number;
   title: string;
   notes?: string;
-  completed: boolean;
-  createdAt: number;
-  order: number;
   category?: string;
+  completed: boolean;
+  order: number;
 }

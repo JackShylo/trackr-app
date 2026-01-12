@@ -5,11 +5,10 @@ export interface List {
   id: string;
   createdAt: number;
   title: string;
-  description?: string;
   icon?: {
     name: keyof typeof Ionicons.glyphMap;
     color: string;
   };
   items: ListItem[];
-
+  pinned?: boolean;
 }

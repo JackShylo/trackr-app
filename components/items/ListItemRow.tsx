@@ -3,6 +3,8 @@ import { View, Text, TextInput, Pressable, Animated, PanResponder, StyleSheet } 
 import { Ionicons } from "@expo/vector-icons";
 import { ListItem } from "../../types/ListItem";
 import UpdateItemModal from "./UpdateItemModal";
+import { useSettingsStore } from "@/store/useSettingsStore";
+import { THEMES } from "@/constants/themes";
 
 interface Props {
   item: ListItem;
@@ -23,6 +25,9 @@ export default function ListItemRow({ item, onToggle, onDelete, onUpdate }: Prop
   const notesRef = useRef<TextInput>(null);
   const translateX = useRef(new Animated.Value(0)).current;
   const [editVisible, setEditVisible] = useState(false);
+
+  const theme = useSettingsStore((s) => s.theme);
+  const themeConfig = THEMES[theme];
 
   const SWIPE_ACTIVATION_DISTANCE = 20;
   const VERTICAL_SWIPE_LIMIT = 15;
@@ -118,7 +123,7 @@ export default function ListItemRow({ item, onToggle, onDelete, onUpdate }: Prop
 return (
     <View className="relative mb-4 overflow-hidden rounded-2xl">
     {/* Edit background */}
-      <View className="absolute inset-y-0 left-0 w-1/2 bg-green-500 justify-center items-start pl-5">
+      <View className="absolute inset-y-0 left-0 w-1/2 m-1 justify-center items-start pl-5 rounded-2xl" style={{ backgroundColor: themeConfig.primaryLight }}>
         <Animated.View
           style={{
             opacity: editIconOpacity,
@@ -130,7 +135,7 @@ return (
       </View>
 
       {/* Delete background */}
-      <View className="absolute inset-y-0 right-0 w-1/2 bg-red-500 justify-center items-end pr-5">
+      <View className="absolute inset-y-0 right-0 w-1/2 m-1 justify-center items-end pr-5 rounded-2xl" style={{ backgroundColor: "#ef4444" }}>
         <Animated.View
           style={{
             opacity: iconOpacity,
@@ -144,27 +149,18 @@ return (
       {/* Foreground swipeable card */}
       <Animated.View
         {...pan.panHandlers}
-        style={[{ transform: [{ translateX }] }, styles.card]}
+        style={[{ transform: [{ translateX }] }, { backgroundColor: themeConfig.surface }]}
+        className="flex-1 rounded-2xl"
       >
         <Pressable
           onLongPress={() => setEditVisible(true)}
           className="p-5"
         >
-          <Text className="font-medium text-white" style={[item.completed && styles.completed]}>
+          <Text className="font-medium" style={[{ color: themeConfig.text }, item.completed && { textDecorationLine: "line-through", color: themeConfig.textSecondary }]}>
             {item.title}
           </Text>
         </Pressable>
       </Animated.View>
-      
-        {/*
-          <Ionicons
-            name={expanded ? "chevron-up" : "chevron-down"}
-            size={20}
-            color="#6B7280"
-            onPress={() => setExpanded((v) => !v)}
-            className="absolute right-4"
-          />
-        */}
 
       <UpdateItemModal
         visible={editVisible}
@@ -178,17 +174,12 @@ return (
 }
 
 const styles = StyleSheet.create({
-card: {
-  flex: 1,
-  borderRadius: 16,
-  backgroundColor: "#1F2937",
-  shadowColor: "#000",
-  shadowOpacity: 0.08,
-  shadowRadius: 6,
-  elevation: 2,
-},
-  completed: {
-    textDecorationLine: "line-through",
-    color: "#9CA3AF",
-  }
+  card: {
+    flex: 1,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
 });

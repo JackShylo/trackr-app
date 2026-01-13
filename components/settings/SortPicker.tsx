@@ -3,12 +3,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { THEMES } from "@/constants/themes";
 
-type SortMode = "chrono" | "alpha" | "custom";
+type SortMode = "chrono" | "alpha" | "reverse-chrono";
 
 const SORT_OPTIONS: { mode: SortMode; label: string }[] = [
-  { mode: "custom", label: "Custom order" },
   { mode: "alpha", label: "Alphabetical" },
   { mode: "chrono", label: "Oldest first" },
+  { mode: "reverse-chrono", label: "Newest first" },
 ];
 
 export default function SortPicker() {

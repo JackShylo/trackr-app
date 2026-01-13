@@ -42,7 +42,7 @@ export const THEMES = {
     textSecondary: "#cbd5e1", // light gray
   },
   pikachu: {
-    name: "Pikachu",
+    name: "Volt Tackle",
     primary: "#dc2626", // dark red (for mouth/cheeks)
     primaryLight: "#fbbf24", // bright yellow
     accent: "#f59e0b", // amber

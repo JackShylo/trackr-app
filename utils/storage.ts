@@ -6,8 +6,8 @@ const STORAGE_KEY = "@trackr_lists";
 const SETTINGS_KEY = "@trackr_settings";
 
 export interface Settings {
-  listSortMode?: "chrono" | "alpha" | "custom";
-  itemSortMode?: "chrono" | "alpha" | "custom";
+  listSortMode?: "alpha" | "chrono" | "reverse-chrono";
+  itemSortMode?: "alpha" | "chrono" | "reverse-chrono";
   theme?: Theme;
   confirmDeletes?: boolean;
 }

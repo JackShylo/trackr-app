@@ -1,7 +1,6 @@
-import React, { ReactNode } from "react";
-import { View, Text, Pressable, ScrollView, Alert, Platform, Share } from "react-native";
+import React from "react";
+import { View, Text, ScrollView, Alert, Platform, Share } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import Section from "@/components/settings/Section"
 import Row from "@/components/settings/Row";
 import ThemePicker from "@/components/settings/ThemePicker";

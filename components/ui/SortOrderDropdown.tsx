@@ -3,7 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSettingsStore } from "@/store/useSettingsStore";
 import { THEMES } from "@/constants/themes";
 
-type SortMode = "custom" | "alpha" | "chrono";
+type SortMode = "alpha" | "chrono" | "reverse-chrono";
 
 interface Props {
   value: SortMode;
@@ -24,9 +24,10 @@ export default function SortDropdown({
   const themeConfig = THEMES[theme];
 
   const label =
-    value === "custom" ? "Custom" :
     value === "alpha" ? "A–Z" :
-    "Oldest";
+    value === "chrono" ? "Oldest" :
+    value === "reverse-chrono" ? "Newest" :
+    "Newest";
 
   return (
     <View className="relative z-50" style={{ zIndex: 50, elevation: 50 }}>
@@ -55,12 +56,6 @@ export default function SortDropdown({
             style={{ zIndex: 51, elevation: 51, backgroundColor: themeConfig.surface }}
           >
             <Option
-              label="Custom order"
-              active={value === "custom"}
-              onPress={() => onChange("custom")}
-              themeConfig={themeConfig}
-            />
-            <Option
               label="Alphabetical"
               active={value === "alpha"}
               onPress={() => onChange("alpha")}
@@ -70,6 +65,12 @@ export default function SortDropdown({
               label="Oldest first"
               active={value === "chrono"}
               onPress={() => onChange("chrono")}
+              themeConfig={themeConfig}
+            />
+            <Option
+              label="Newest first"
+              active={value === "reverse-chrono"}
+              onPress={() => onChange("reverse-chrono")}
               themeConfig={themeConfig}
             />
           </View>

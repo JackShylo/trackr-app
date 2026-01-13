@@ -3,8 +3,8 @@ import { loadSettings, saveSettings } from "../utils/storage";
 import { Theme } from "../constants/themes";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
-type ListSortMode = "chrono" | "alpha" | "custom";
-type ItemSortMode = "chrono" | "alpha" | "custom";
+type ListSortMode = "chrono" | "alpha" | "reverse-chrono";
+type ItemSortMode = "chrono" | "alpha" | "reverse-chrono";
 
 interface SettingsState {
   listSortMode: ListSortMode;
@@ -23,7 +23,7 @@ interface SettingsState {
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   listSortMode: "chrono",
-  itemSortMode: "custom",
+  itemSortMode: "reverse-chrono",
   theme: "ocean",
   confirmDeletes: true,
   hydrated: false,
@@ -46,7 +46,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
     set({
       listSortMode: stored?.listSortMode ?? "chrono",
-      itemSortMode: stored?.itemSortMode ?? "custom",
+      itemSortMode: stored?.itemSortMode ?? "reverse-chrono",
       theme: stored?.theme ?? defaultTheme,
       confirmDeletes: stored?.confirmDeletes ?? true,
       hydrated: true,

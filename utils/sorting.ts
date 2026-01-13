@@ -1,4 +1,4 @@
-import { Todo } from "../types/ListItem";
+import { Todo } from "@ListItem/types/Todo";
 import { List } from "../types/List";
 import { ListItem } from "../types/ListItem";
 
@@ -10,8 +10,8 @@ export const sortAlphabetical = (items: Todo[]) =>
 export const sortChronological = (items: Todo[]) =>
   [...items].sort((a, b) => a.createdAt - b.createdAt);
 
-export const sortCustom = (items: Todo[]) =>
-  [...items].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+export const sortReverseChronological = (items: Todo[]) =>
+  [...items].sort((a, b) => b.createdAt - a.createdAt);
 
 /* ─────────── List Sorting ─────────── */
 export const sortListsAlphabetical = (lists: List[]) =>
@@ -22,7 +22,7 @@ export const sortListsAlphabetical = (lists: List[]) =>
 export const sortListsChronological = (lists: List[]) =>
   [...lists].sort((a, b) => a.createdAt - b.createdAt);
 
-export const sortLists = (lists: List[], mode: "chrono" | "alpha" | "custom") => {
+export const sortLists = (lists: List[], mode: "alpha" | "chrono" | "reverse-chrono") => {
   // Separate pinned and unpinned
   const pinned = lists.filter((l) => l.pinned);
   const unpinned = lists.filter((l) => !l.pinned);
@@ -52,11 +52,11 @@ export const sortItemsAlphabetical = (items: ListItem[]) =>
 export const sortItemsChronological = (items: ListItem[]) =>
   [...items].sort((a, b) => a.createdAt - b.createdAt);
 
-export const sortItemsCustom = (items: ListItem[]) =>
-  [...items].sort((a, b) => a.order - b.order);
+export const sortItemsReverseChronological = (items: ListItem[]) =>
+  [...items].sort((a, b) => b.createdAt - a.createdAt);
 
-export const sortItems = (items: ListItem[], mode: "chrono" | "alpha" | "custom") => {
+export const sortItems = (items: ListItem[], mode: "alpha" | "chrono" | "reverse-chrono") => {
   if (mode === "alpha") return sortItemsAlphabetical(items);
   if (mode === "chrono") return sortItemsChronological(items);
-  return sortItemsCustom(items); // custom order
+  return sortItemsReverseChronological(items);
 };

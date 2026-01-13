@@ -8,7 +8,7 @@ export default function ThemePicker() {
   const setTheme = useSettingsStore((s) => s.setTheme);
 
   return (
-    <View className="px-4 py-4">
+    <View className="px-1 py-1">
       <ScrollView horizontal showsHorizontalScrollIndicator={false} className="gap-3">
         {THEME_NAMES.map((themeName) => {
           const themeConfig = THEMES[themeName];
@@ -18,7 +18,7 @@ export default function ThemePicker() {
             <Pressable
               key={themeName}
               onPress={() => setTheme(themeName)}
-              className={`items-center gap-2 p-3 rounded-lg border-2 ${
+              className={`items-center gap-2 p-3 mx-1 rounded-lg border-2 ${
                 isActive ? "border-blue-400" : "border-gray-300"
               }`}
               style={{

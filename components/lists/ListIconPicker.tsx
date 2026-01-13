@@ -28,7 +28,7 @@ export default function ListIconPicker({ visible, onClose, onSelectIcon, selecte
             key={icon.name}
             onPress={() => onSelectIcon(icon as ListIcon)}
             className={`
-              w-12 h-12 rounded-xl items-center justify-center
+              w-12 h-12 rounded-xl items-center justify-center flex-1 mb-2
               ${selected ? "bg-white/20" : "bg-white/10"}
             `}
           >

@@ -32,11 +32,11 @@ export default function UpdateListModal({ visible, onClose, onSave, initialTitle
       <View className="flex-1 bg-black/40 justify-center items-center px-4">
         <KeyboardAvoidingView behavior="padding" className="w-full">
           <View className="bg-gray-800 rounded-2xl p-5 shadow-lg">
-            <Text className="text-lg font-semibold mb-4">Edit List</Text>
+            <Text className="text-lg text-white font-semibold mb-4">Edit List</Text>
 
             {/* Title */}
             <TextInput
-              className="border border-gray-300 rounded-xl px-4 py-3 text-base mb-3"
+              className="border text-white border-gray-300 rounded-xl px-4 py-3 text-base mb-3"
               value={listTitle}
               onChangeText={setListTitle}
               placeholder="Rename List"
@@ -49,46 +49,33 @@ export default function UpdateListModal({ visible, onClose, onSave, initialTitle
                 </Text>
             )}
 
-            {/* Icon Picker */}
-            <Pressable 
-              onPress={() => setShowIconPicker(true)}
-              className="border border-gray-300 rounded-xl px-4 py-3 mb-4"
-            >
-              <Text className="text-base text-gray-700 mb-2">Change Icon</Text>
-              {selectedIcon && (
-                <Text className="text-sm text-gray-500">
-                  Selected: {selectedIcon.name}
-                </Text>
-              )}
-            </Pressable>
-
+              {/* Icon Picker Modal */}
+              <ListIconPicker
+                visible={true}
+                onClose={() => setShowIconPicker(false)}
+                onSelectIcon={(icon) => {
+                  setSelectedIcon(icon);
+                }}
+                selectedIcon={selectedIcon}
+              />
             {/* Actions */}
-            <View className="flex-row justify-end space-x-5">
-              <Pressable onPress={onClose}>
-                <Text className="text-gray-500 text-base">Cancel</Text>
-              </Pressable>
-
+            <View className="flex-row justify-end">
               <Pressable
                 onPress={() => {
                   onSave(listTitle?.trim() || "", selectedIcon);
                   onClose();
                 }}
+                className="m-1 bg-green-500 px-4 py-2 rounded-lg"
               >
-                <Text className="text-blue-600 font-semibold text-base">
+                <Text className="text-white font-semibold text-base">
                   Save
                 </Text>
               </Pressable>
+
+              <Pressable className="m-1 bg-red-500 px-4 py-2 rounded-lg" onPress={onClose}>
+                <Text className="text-white text-base">Cancel</Text>
+              </Pressable>
             </View>
-      {/* Icon Picker Modal */}
-      <ListIconPicker
-        visible={showIconPicker}
-        onClose={() => setShowIconPicker(false)}
-        onSelectIcon={(icon) => {
-          setSelectedIcon(icon);
-          setShowIconPicker(false);
-        }}
-        selectedIcon={selectedIcon}
-      />
           </View>
         </KeyboardAvoidingView>
         

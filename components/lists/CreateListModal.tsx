@@ -66,7 +66,7 @@ export default function CreateListModal({ visible, onClose, onSubmit }: Props) {
         />
           
           <View className="flex-row justify-end">
-            <Pressable className=" m-1 bg-green-500 px-4 py-2 rounded-lg" onPress={handleAdd}>
+            <Pressable className="m-1 bg-green-500 px-4 py-2 rounded-lg" onPress={handleAdd}>
               <Text className="font-semibold text-white">Add</Text>
             </Pressable>
             <Pressable className="m-1 bg-red-500 px-4 py-2 rounded-lg" onPress={handleClose}>
